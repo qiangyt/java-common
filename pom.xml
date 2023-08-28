@@ -2,13 +2,21 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>qiangyt</groupId>
+    <groupId>com.github.qiangyt</groupId>
     <artifactId>qiangyt-common</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
+
     <name>${project.artifactId} ${project.version}</name>
     <description>Common library by Yiting Qiang</description>
     <url>https://github.com/qiangyt/java-common</url>
+
+    <licenses>
+        <license>
+            <name>The Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
 
     <developers>
         <developer>
@@ -22,7 +30,7 @@
     <scm>
         <connection>scm:git:git://github.com/qiangyt/java-common.git</connection>
         <developerConnection>scm:git:ssh://github.com/qiangyt/java-common.git</developerConnection>
-        <url>http://github.com/qiangyt/java-common</url>
+        <url>http://github.com/qiangyt/java-common/tree/master</url>
     </scm>
 
     <properties>
@@ -486,7 +494,7 @@
                         <quiet>true</quiet>
                         <licenseSets>
                             <licenseSet>
-                                <header>com/mycila/maven/plugin/license/templates/GPL-3-ONLY.txt</header>
+                                <header>com/mycila/maven/plugin/license/templates/APACHE-2.txt</header>
                                 <includes>
                                     <include>**/src/main/java/**</include>
                                     <include>**/src/test/java/**</include>
@@ -564,5 +572,72 @@
             </extension>
         </extensions>
     </build>
+
+    <profiles>
+        <profile>
+            <id>deploy</id>
+            <distributionManagement>
+                <repository>
+                    <id>ossrh</id>
+                    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+                </repository>
+                <snapshotRepository>
+                    <id>ossrh</id>
+                    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+                </snapshotRepository>
+            </distributionManagement>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>2.9.1</version>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                                <configuration>
+                                    <additionalparam>-Xdoclint:none</additionalparam>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.sonatype.plugins</groupId>
+                        <artifactId>nexus-staging-maven-plugin</artifactId>
+                        <version>1.6.8</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <serverId>ossrh</serverId>
+                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.6</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                                <phase>verify</phase>
+                                <configuration>
+                                    <gpgArguments>
+                                        <arg>--pinentry-mode</arg>
+                                        <arg>loopback</arg>
+                                    </gpgArguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>
