@@ -15,17 +15,31 @@
  */
 package io.github.qiangyt.common.misc;
 
-public class StringHelperTest {
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
-	/*@Test
-	public void test_join() {
-		assertEquals("1&2", StringHelper.join("&", List.of(1, 2)));
-		assertEquals("3", StringHelper.join("&", List.of(3)));
-		assertEquals("", StringHelper.join("&", new ArrayList<String>()));
+public class Holder<T> {
 
-		assertEquals("A,B", StringHelper.join(",", new String[]{"A","B"}));
-		assertEquals("C", StringHelper.join(",", new String[]{"C"}));
-		assertEquals("", StringHelper.join(",", new String[]{}));
-	}*/
+    private volatile T value;
+
+    public Holder() {
+        this(null);
+    }
+
+    public Holder(@Nullable T value) {
+        this.value = value;
+    }
+
+    public static @Nonnull <T> Holder<T> of(@Nullable T value) {
+        return new Holder<>(value);
+    }
+
+    public void set(@Nullable T value) {
+        this.value = value;
+    }
+
+    public @Nullable T get() {
+        return this.value;
+    }
 
 }

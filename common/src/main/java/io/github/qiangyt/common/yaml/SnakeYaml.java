@@ -13,19 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.qiangyt.common.misc;
+package io.github.qiangyt.common.yaml;
 
-public class StringHelperTest {
+import org.yaml.snakeyaml.LoaderOptions;
+import org.yaml.snakeyaml.Yaml;
 
-	/*@Test
-	public void test_join() {
-		assertEquals("1&2", StringHelper.join("&", List.of(1, 2)));
-		assertEquals("3", StringHelper.join("&", List.of(3)));
-		assertEquals("", StringHelper.join("&", new ArrayList<String>()));
+public class SnakeYaml {
 
-		assertEquals("A,B", StringHelper.join(",", new String[]{"A","B"}));
-		assertEquals("C", StringHelper.join(",", new String[]{"C"}));
-		assertEquals("", StringHelper.join(",", new String[]{}));
-	}*/
+    public static Yaml build() {
+        var options = new LoaderOptions();
+        options.setAllowDuplicateKeys(false);
+        options.setAllowRecursiveKeys(false);
+        options.setWrappedToRootException(true);
+
+        return new Yaml(options);
+    }
 
 }

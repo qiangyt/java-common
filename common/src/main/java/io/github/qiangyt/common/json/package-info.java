@@ -13,19 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.qiangyt.common.misc;
+package io.github.qiangyt.common.json;
 
-public class StringHelperTest {
-
-	/*@Test
-	public void test_join() {
-		assertEquals("1&2", StringHelper.join("&", List.of(1, 2)));
-		assertEquals("3", StringHelper.join("&", List.of(3)));
-		assertEquals("", StringHelper.join("&", new ArrayList<String>()));
-
-		assertEquals("A,B", StringHelper.join(",", new String[]{"A","B"}));
-		assertEquals("C", StringHelper.join(",", new String[]{"C"}));
-		assertEquals("", StringHelper.join(",", new String[]{}));
-	}*/
-
-}
+/**
+ * JSON相关工具
+ */

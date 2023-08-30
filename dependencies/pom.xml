@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.github.qiangyt</groupId>
+    <groupId>io.github.qiangyt</groupId>
     <artifactId>qiangyt-common-dependencies</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>${project.artifactId} ${project.version}</name>
+    <name>${project.groupId}:${project.artifactId}</name>
     <description>Common library by Yiting Qiang</description>
     <url>https://github.com/qiangyt/java-common</url>
 
@@ -33,27 +34,6 @@
         <url>http://github.com/qiangyt/java-common/tree/master</url>
     </scm>
 
-    <properties>
-        <java.version>17</java.version>
-        <java.source.version>${java.version}</java.source.version>
-        <java.target.version>${java.version}</java.target.version>
-        <maven.compiler.source>${java.source.version}</maven.compiler.source>
-        <maven.compiler.target>${java.target.version}</maven.compiler.target>
-
-        <project.encoding>UTF-8</project.encoding>
-        <project.reporting.outputEncoding>${project.encoding}</project.reporting.outputEncoding>
-        <maven.compiler.encoding>${project.encoding}</maven.compiler.encoding>
-        <project.build.sourceEncoding>${project.encoding}</project.build.sourceEncoding>
-
-        <spring-boot.version>3.1.2</spring-boot.version>
-        <springframework.version>6.0.11</springframework.version>
-        <jacoco.path>${project.build.directory}/jacoco.exec</jacoco.path>
-        <jacoco.skip>false</jacoco.skip>
-        <jackson.version>2.15.2</jackson.version>
-        <junit5.version>5.9.3</junit5.version>
-        <logback.version>1.4.8</logback.version>
-    </properties>
-
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -78,13 +58,14 @@
                 <groupId>jakarta.annotation</groupId>
                 <artifactId>jakarta.annotation-api</artifactId>
                 <version>2.1.1</version>
-                <scope>compile</scope>
             </dependency>
 
             <dependency>
                 <groupId>ch.qos.logback</groupId>
-                <artifactId>logback-access</artifactId>
-                <version>${logback.version}</version>
+                <artifactId>logback-parent</artifactId>
+                <type>pom</type>
+                <scope>import</scope>
+                <version>1.4.8</version>
             </dependency>
 
             <dependency>
@@ -92,34 +73,12 @@
                 <artifactId>okio</artifactId>
                 <version>1.15.0</version>
             </dependency>
-
             <dependency>
-                <groupId>ch.qos.logback</groupId>
-                <artifactId>logback-classic</artifactId>
-                <version>${logback.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>ch.qos.logback</groupId>
-                <artifactId>logback-core</artifactId>
-                <version>${logback.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-annotations</artifactId>
-                <version>${jackson.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-databind</artifactId>
-                <version>${jackson.version}</version>
-            </dependency>
-
-            <!-- required by Java 8 date/time type `java.time.Instant` which is not supported by default -->
-            <dependency>
-                <groupId>com.fasterxml.jackson.datatype</groupId>
-                <artifactId>jackson-datatype-jsr310</artifactId>
-                <version>${jackson.version}</version>
+                <groupId>com.fasterxml.jackson</groupId>
+                <artifactId>jackson-bom</artifactId>
+                <version>2.15.2</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
 
             <dependency>
@@ -128,16 +87,11 @@
                 <version>2.18.0</version>
             </dependency>
             <dependency>
-                <groupId>org.junit.jupiter</groupId>
-                <artifactId>junit-jupiter-api</artifactId>
-                <version>${junit5.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.junit.jupiter</groupId>
-                <artifactId>junit-jupiter-engine</artifactId>
-                <version>${junit5.version}</version>
-                <scope>test</scope>
+                <groupId>org.junit</groupId>
+                <artifactId>junit-bom</artifactId>
+                <version>5.9.3</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>net.logstash.logback</groupId>
@@ -170,12 +124,12 @@
                 <groupId>org.checkerframework</groupId>
                 <artifactId>checker-qual</artifactId>
                 <version>3.32.0</version>
-            </dependency>          
+            </dependency>
             <dependency>
                 <groupId>com.google.code.gson</groupId>
                 <artifactId>gson</artifactId>
                 <version>2.10.1</version>
-            </dependency>            
+            </dependency>
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
@@ -214,8 +168,15 @@
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter</artifactId>
-                <version>${spring-boot.version}</version>
-            </dependency>            
+                <version>3.1.2</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-framework-bom</artifactId>
+                <version>6.0.11</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <dependency>
                 <groupId>commons-codec</groupId>
                 <artifactId>commons-codec</artifactId>
@@ -223,204 +184,6 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-
-    <build>
-        <pluginManagement>
-            <plugins>
-                <!-- jacoco coveraage -->
-                <!-- mvn jacoco:report -Djacoco.skip=false -->
-                <plugin>
-                    <groupId>org.jacoco</groupId>
-                    <artifactId>jacoco-maven-plugin</artifactId>
-                    <version>0.8.8</version>
-                    <configuration>
-                        <skip>${jacoco.skip}</skip>
-                        <destFile>${jacoco.path}</destFile>
-                        <sessionId>jacoco_coverage</sessionId>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <id>pre-test</id>
-                            <goals>
-                                <goal>prepare-agent</goal>
-                            </goals>
-                            <phase>process-classes</phase>
-                            <configuration>
-                                <propertyName>coverageAgent</propertyName>
-                            </configuration>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.11.0</version>
-                    <configuration>
-                        <source>${java.source.version}</source>
-                        <target>${java.target.version}</target>
-                        <encoding>${project.encoding}</encoding>
-                        <showDeprecation>true</showDeprecation>
-                        <showWarnings>true</showWarnings>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-surefire-plugin</artifactId>
-                    <version>3.0.0</version>
-                    <inherited>true</inherited>
-                    <configuration>
-                        <!-- jacoco coveraage -->
-                        <argLine>-Xmx2048m ${coverageAgent}</argLine>
-                        <includes>
-                            <include>**/*Test.java</include>
-                            <include>**/*TestSuite*.java</include>
-                        </includes>
-                        <forkMode>pertest</forkMode>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-source-plugin</artifactId>
-                    <version>3.2.1</version>
-                    <executions>
-                        <execution>
-                            <id>attach-sources</id>
-                            <goals>
-                                <goal>jar</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-eclipse-plugin</artifactId>
-                    <version>2.10</version>
-                    <configuration>
-                        <downloadSources>true</downloadSources>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-enforcer-plugin</artifactId>
-                    <version>3.2.1</version>
-                    <executions>
-                        <execution>
-                            <id>enforce</id>
-                            <goals>
-                                <goal>enforce</goal>
-                            </goals>
-                            <configuration>
-                                <rules>
-                                    <requireUpperBoundDeps></requireUpperBoundDeps>
-                                </rules>
-                            </configuration>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
-                    <groupId>org.projectlombok</groupId>
-                    <artifactId>lombok-maven-plugin</artifactId>
-                    <version>1.18.20.0</version>
-                    <executions>
-                        <execution>
-                            <goals>
-                                <goal>delombok</goal>
-                            </goals>
-                            <phase>generate-sources</phase>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
-                    <!-- https://code.revelc.net/formatter-maven-plugin/plugin-info.html -->
-                    <groupId>net.revelc.code.formatter</groupId>
-                    <artifactId>formatter-maven-plugin</artifactId>
-                    <version>2.22.0</version>
-                    <configuration>
-                        <directories>
-                            <directory>${project.build.sourceDirectory}</directory>
-                            <directory>${project.build.directory}/generated-sources</directory>
-                        </directories>
-                        <compilerSource>${java.source.version}</compilerSource>
-                        <compilerCompliance>${java.source.version}</compilerCompliance>
-                        <compilerTargetPlatform>${java.target.version}</compilerTargetPlatform>
-                        <lineEnding>LF</lineEnding>
-                        <encoding>${project.encoding}</encoding>
-                        <!--<configFile>${user.dir}/tools/codestyle/formatter.xml</configFile>-->
-                        <removeTrailingWhitespace>true</removeTrailingWhitespace>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <goals>
-                                <goal>format</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
-                    <groupId>com.github.ekryd.sortpom</groupId>
-                    <artifactId>sortpom-maven-plugin</artifactId>
-                    <version>3.2.1</version>
-                    <configuration>
-                        <nrOfIndentSpace>4</nrOfIndentSpace>
-                        <keepBlankLines>true</keepBlankLines>
-                        <sortProperties>false</sortProperties>
-                        <encoding>${project.encoding}</encoding>
-                        <sortModules>true</sortModules>
-                        <createBackupFile>false</createBackupFile>
-                        <lineSeparator>\n</lineSeparator>
-                        <keepTimestamp>true</keepTimestamp>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <id>sort-pom</id>
-                            <goals>
-                                <goal>sort</goal>
-                            </goals>
-                            <phase>compile</phase>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
-                    <groupId>com.mycila</groupId>
-                    <artifactId>license-maven-plugin</artifactId>
-                    <version>4.2</version>
-                    <configuration>
-                        <properties>
-                            <owner>Yiting Qiang</owner>
-                            <email>qiangyt@wxcount.com</email>
-                            <year>2023</year>
-                        </properties>
-                        <quiet>true</quiet>
-                        <licenseSets>
-                            <licenseSet>
-                                <header>com/mycila/maven/plugin/license/templates/APACHE-2.txt</header>
-                                <includes>
-                                    <include>**/src/main/java/**</include>
-                                    <include>**/src/test/java/**</include>
-                                </includes>
-                                <excludes>
-                                    <!--<exclude>**/common/Example.java</exclude>-->
-                                </excludes>
-                            </licenseSet>
-                        </licenseSets>
-                        <strictCheck>true</strictCheck>
-                        <mapping>
-                            <java>SLASHSTAR_STYLE</java>
-                        </mapping>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <goals>
-                                <goal>remove</goal>
-                                <goal>format</goal>
-                            </goals>
-                            <phase>generate-sources</phase>
-                        </execution>
-                    </executions>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-    </build>
 
     <profiles>
         <profile>
@@ -432,7 +195,7 @@
                 </repository>
                 <snapshotRepository>
                     <id>ossrh</id>
-                    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+                    <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
                 </snapshotRepository>
             </distributionManagement>
             <build>
@@ -440,7 +203,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>2.9.1</version>
+                        <version>3.5.0</version>
                         <executions>
                             <execution>
                                 <id>attach-javadocs</id>
@@ -456,18 +219,18 @@
                     <plugin>
                         <groupId>org.sonatype.plugins</groupId>
                         <artifactId>nexus-staging-maven-plugin</artifactId>
-                        <version>1.6.8</version>
+                        <version>1.6.13</version>
                         <extensions>true</extensions>
                         <configuration>
                             <serverId>ossrh</serverId>
-                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                            <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
                             <autoReleaseAfterClose>true</autoReleaseAfterClose>
                         </configuration>
                     </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.6</version>
+                        <version>3.1.0</version>
                         <executions>
                             <execution>
                                 <id>sign-artifacts</id>
@@ -475,12 +238,12 @@
                                     <goal>sign</goal>
                                 </goals>
                                 <phase>verify</phase>
-                                <configuration>
+                                <!--<configuration>
                                     <gpgArguments>
-                                        <arg>--pinentry-mode</arg>
+                                        <arg> - - pinentry-mode</arg>
                                         <arg>loopback</arg>
                                     </gpgArguments>
-                                </configuration>
+                                </configuration>-->
                             </execution>
                         </executions>
                     </plugin>

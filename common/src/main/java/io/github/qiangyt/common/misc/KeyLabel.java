@@ -15,17 +15,24 @@
  */
 package io.github.qiangyt.common.misc;
 
-public class StringHelperTest {
+/**
+ * Enumeration of PEM labels.
+ */
+public enum KeyLabel {
+    CERTIFICATE("CERTIFICATE"), CERTIFICATE_REQUEST("CERTIFICATE REQUEST"), PRIVATE_KEY("PRIVATE KEY"),
+    PUBLIC_KEY("PUBLIC KEY");
 
-	/*@Test
-	public void test_join() {
-		assertEquals("1&2", StringHelper.join("&", List.of(1, 2)));
-		assertEquals("3", StringHelper.join("&", List.of(3)));
-		assertEquals("", StringHelper.join("&", new ArrayList<String>()));
+    public final String label;
+    public final String beginLine, endLine;
 
-		assertEquals("A,B", StringHelper.join(",", new String[]{"A","B"}));
-		assertEquals("C", StringHelper.join(",", new String[]{"C"}));
-		assertEquals("", StringHelper.join(",", new String[]{}));
-	}*/
+    KeyLabel(String label) {
+        this.label = label;
+        this.beginLine = String.format("-----BEGIN %s-----", label);
+        this.endLine = String.format("-----END %s-----", label);
+    }
 
+    @Override
+    public String toString() {
+        return label;
+    }
 }

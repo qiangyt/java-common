@@ -13,19 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.qiangyt.common.misc;
+package io.github.qiangyt.common.bean;
 
-public class StringHelperTest {
+import java.util.Date;
 
-	/*@Test
-	public void test_join() {
-		assertEquals("1&2", StringHelper.join("&", List.of(1, 2)));
-		assertEquals("3", StringHelper.join("&", List.of(3)));
-		assertEquals("", StringHelper.join("&", new ArrayList<String>()));
+/**
+ * 可修改的实体类的VO。
+ *
+ * 所有property必须和@see qiangyt.common.entity.MutableEO一一对应，因为 EO和VO间的property copy机制依赖于这个规定。
+ *
+ */
+@lombok.Getter
+@lombok.Setter
+@lombok.NoArgsConstructor
+// @lombok.experimental.SuperBuilder
+public class MutableBean extends GenericBean {
 
-		assertEquals("A,B", StringHelper.join(",", new String[]{"A","B"}));
-		assertEquals("C", StringHelper.join(",", new String[]{"C"}));
-		assertEquals("", StringHelper.join(",", new String[]{}));
-	}*/
+    /**
+     * 版本号。用于乐观锁(optimistic locking)
+     */
+    int version;
+
+    /**
+     * 修改时间
+     */
+    Date updatedAt;
 
 }
