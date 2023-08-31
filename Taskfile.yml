@@ -1,0 +1,50 @@
+version: '3'
+
+output: prefixed
+
+tasks:
+
+  eclipse:
+    desc: generate Eclipse files (.classpath & .project) for local development
+    cmds:
+      - mvn eclipse:eclipse
+
+  clean:
+    cmds:
+      - mvn clean
+
+  test:
+    cmds:
+      - mvn test
+  
+  package:
+    cmds:
+      - mvn package
+  
+  default:
+    desc: run package task
+    deps: [package]
+
+  rebuild:
+    cmds:
+      - task: clean
+      - task: package
+
+  install:
+    desc: install to local Maven repository
+    deps: [package]
+    cmds:
+      - mvn install
+  
+  #staging-drop:
+  #  desc: drop staging repository
+  #  cmds:
+  #    - mvn nexus-staging:drop -P release
+
+  release:
+    desc: release to sonar staging repository, and Maven central if not a -SNAPSHOT
+    deps: [rebuild]
+    cmds:
+      - task: rebuild
+      - mvn deploy -P release
+
