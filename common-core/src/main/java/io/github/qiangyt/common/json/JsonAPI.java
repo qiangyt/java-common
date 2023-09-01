@@ -80,7 +80,7 @@ public class JsonAPI implements Dumpable {
         this.client = initClient();
     }
 
-    @SuppressWarnings({ "null", "unchecked" })
+    @SuppressWarnings("unchecked")
     @Override
     public @Nonnull Map<String, Object> toMap(Map<Object, Object> visited) {
         if (visited == null) {

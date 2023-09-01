@@ -42,7 +42,6 @@ public class JsonAPIConfig implements Dumpable {
 
     public static final int DEFAULT_CONNECT_TIMEOUT = 10;
     public static final int DEFAULT_READ_TIMEOUT = 10;
-    // TODO: proxy
 
     @Nonnull
     public static final HttpClient.Redirect DEFAULT_REDIRECT = HttpClient.Redirect.ALWAYS;
@@ -77,7 +76,7 @@ public class JsonAPIConfig implements Dumpable {
         }
     }
 
-    @SuppressWarnings({ "null", "unchecked" })
+    @SuppressWarnings("unchecked")
     @Override
     public @Nonnull Map<String, Object> toMap(Map<Object, Object> visited) {
         if (visited == null) {

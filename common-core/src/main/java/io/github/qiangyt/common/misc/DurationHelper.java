@@ -30,7 +30,6 @@ public class DurationHelper {
 
     private static final Pattern PERIOD_PATTERN = Pattern.compile("([0-9]+)([smhdw])");
 
-    @SuppressWarnings("null")
     @Nullable
     public static Duration parse(@Nullable String text) {
         if (StringHelper.isBlank(text)) {

@@ -8,20 +8,20 @@
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-    <groupId>${parent.groupId}</groupId>
+    <groupId>io.github.qiangyt</groupId>
     <artifactId>qiangyt-common-bom</artifactId>
-    <version>${parent.version}</version>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
-    <description>Common library BOM by Yiting Qiang</description>
+    <description>Common library parent by Yiting Qiang</description>
 
     <dependencyManagement>
         <dependencies>
             <dependency>
                 <groupId>io.github.qiangyt</groupId>
                 <artifactId>qiangyt-common-dependencies</artifactId>
-                <version>${project.version}</version>
+                <version>1.0.0-SNAPSHOT</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -29,7 +29,7 @@
             <dependency>
                 <groupId>io.github.qiangyt</groupId>
                 <artifactId>qiangyt-common-core</artifactId>
-                <version>${project.version}</version>
+                <version>1.0.0-SNAPSHOT</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

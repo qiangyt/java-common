@@ -220,7 +220,6 @@ public class Jackson {
         }
     }
 
-    @SuppressWarnings("null")
     @Nullable
     public byte[] toBytes(@Nullable Object object, boolean pretty) {
         if (object == null) {

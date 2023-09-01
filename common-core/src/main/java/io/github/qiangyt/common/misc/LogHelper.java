@@ -28,7 +28,6 @@ import static java.util.Objects.requireNonNull;
 
 public class LogHelper {
 
-    @SuppressWarnings("null")
     @Nonnull
     public static Logger getLogger(@Nonnull Class<?> klass, @Nonnull String name) {
         requireNonNull(klass);
@@ -37,7 +36,6 @@ public class LogHelper {
         return LoggerFactory.getLogger(name + "@" + klass.getCanonicalName());
     }
 
-    @SuppressWarnings("null")
     @Nonnull
     public static StructuredArgument entries(@Nonnull Dumpable dumpable) {
         requireNonNull(dumpable);
@@ -46,7 +44,6 @@ public class LogHelper {
         return StructuredArguments.entries(map);
     }
 
-    @SuppressWarnings("null")
     @Nonnull
     public static StructuredArgument kv(@Nonnull String key, @Nullable Dumpable dumpable) {
         requireNonNull(key);

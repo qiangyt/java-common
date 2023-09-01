@@ -48,3 +48,7 @@ tasks:
       - task: rebuild
       - mvn deploy -P release
 
+  set-version:
+    cmds:
+      - mvn versions:set -DnewVersion=1.0.0
+

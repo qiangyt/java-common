@@ -34,7 +34,7 @@ import jakarta.annotation.Nonnull;
 public interface Dumpable {
 
     @Nonnull
-    @SuppressWarnings({ "unchecked", "null" })
+    @SuppressWarnings("unchecked")
     default Map<String, Object> toMap(Map<Object, Object> visited) {
         if (visited == null) {
             visited = new HashMap<>();
@@ -107,7 +107,6 @@ public interface Dumpable {
     }
 
     @Nonnull
-    @SuppressWarnings("null")
     default String dumpAsJson(Map<Object, Object> visited) {
         return JacksonHelper.pretty(toMap(visited));
     }
@@ -118,7 +117,6 @@ public interface Dumpable {
     }
 
     @Nonnull
-    @SuppressWarnings("null")
     default String dumpAsYaml(Map<Object, Object> visited) {
         return SnakeYaml.build().dump(toMap(visited));
     }
