@@ -38,11 +38,15 @@ public class EnvExpander {
     private final Map<String, String> envVars;
 
     public EnvExpander() {
-        this(true, true);
+        this(true, true, null);
     }
 
-    public EnvExpander(boolean loadDotEnv, boolean loadSystemEnv) {
-        this.envVars = new HashMap<>();
+    public EnvExpander(Map<String, String> extra) {
+        this(true, true, extra);
+    }
+
+    public EnvExpander(boolean loadDotEnv, boolean loadSystemEnv, Map<String, String> extra) {
+        this.envVars = (extra == null) ? new HashMap<>() : new HashMap<>(extra);
 
         if (loadSystemEnv) {
             this.envVars.putAll(System.getenv());

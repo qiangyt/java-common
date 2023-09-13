@@ -47,12 +47,12 @@ public class ProcBuilderExt extends ProcBuilder {
         return Pair.of(cmdAndArgs[0], Arrays.copyOfRange(cmdAndArgs, 1, cmdAndArgs.length));
     }
 
-    public ProcBuilderExt(@Nonnull String command) {
-        this(splitCommandAndArgs(command));
+    public ProcBuilderExt(@Nonnull EnvExpander envExpander, @Nonnull String command) {
+        this(envExpander, splitCommandAndArgs(command));
     }
 
-    private ProcBuilderExt(Pair<String, String[]> cmdAndArgs) {
-        this(new EnvExpander(), requireNonNull(cmdAndArgs.getLeft()), cmdAndArgs.getRight());
+    public ProcBuilderExt(@Nonnull EnvExpander envExpander, Pair<String, String[]> cmdAndArgs) {
+        this(envExpander, requireNonNull(cmdAndArgs.getLeft()), cmdAndArgs.getRight());
     }
 
     public ProcBuilderExt(@Nonnull EnvExpander envExpander, @Nonnull String command, String[] args) {
@@ -89,18 +89,6 @@ public class ProcBuilderExt extends ProcBuilder {
     @Override
     public ProcResult run() throws StartupException, TimeoutException, ExternalProcessFailureException {
         return super.run();
-    }
-
-    public static String run(@Nonnull String cmd, String... args) {
-        var builder = (new ProcBuilderExt(cmd)).withArgs(args);
-        return builder.run().getOutputString();
-    }
-
-    public static String filter(@Nonnull String input, String cmd, String... args) {
-        requireNonNull(cmd);
-
-        var builder = (new ProcBuilderExt(cmd)).withArgs(args).withInput(input);
-        return builder.run().getOutputString();
     }
 
 }
