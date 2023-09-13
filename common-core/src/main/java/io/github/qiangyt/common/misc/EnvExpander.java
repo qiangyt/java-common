@@ -45,6 +45,10 @@ public class EnvExpander {
         this(true, true, extra);
     }
 
+    public EnvExpander(EnvExpander parent) {
+        this(false, false, parent.envVars);
+    }
+
     public EnvExpander(boolean loadDotEnv, boolean loadSystemEnv, Map<String, String> extra) {
         this.envVars = (extra == null) ? new HashMap<>() : new HashMap<>(extra);
 
