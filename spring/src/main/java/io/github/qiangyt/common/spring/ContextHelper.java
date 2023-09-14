@@ -16,8 +16,8 @@
  */
 package io.github.qiangyt.common.spring;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -35,12 +35,34 @@ public class ContextHelper implements ApplicationContextAware {
     @Nullable
     private static ApplicationContext context;
 
+    @Nullable
     public static <T> T getBean(@Nonnull Class<T> clazz) {
         return getContext().getBean(clazz);
     }
 
+    @SuppressWarnings("unchecked")
+    @Nonnull
+    public static <T> T loadBean(@Nonnull Class<?> clazz) {
+        T r = (T) getBean(clazz);
+        if (r == null) {
+            throw new BadStateException("bean not found: name=%s", clazz.getName());
+        }
+        return r;
+    }
+
+    @Nullable
     public static <T> T getBean(@Nonnull String name, @Nonnull Class<T> clazz) {
         return getContext().getBean(name, clazz);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Nonnull
+    public static <T> T loadBean(@Nonnull String name, @Nonnull Class<?> clazz) {
+        T r = (T) getBean(name, clazz);
+        if (r == null) {
+            throw new BadStateException("bean not found: name=%s, type=%s", name, clazz);
+        }
+        return r;
     }
 
     public static boolean containsBean(@Nonnull String name) {

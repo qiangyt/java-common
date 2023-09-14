@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 
-import jakarta.annotation.Nonnull;
+import javax.annotation.Nonnull;
 import static java.util.Objects.requireNonNull;
 
 import org.apache.commons.vfs2.FileContent;

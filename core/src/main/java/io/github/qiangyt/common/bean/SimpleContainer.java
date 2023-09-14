@@ -16,36 +16,75 @@
  */
 package io.github.qiangyt.common.bean;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Map;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import io.github.qiangyt.common.err.BadStateException;
 
 public class SimpleContainer {
 
-    final LinkedHashMap<String, SimpleBean> beans = new LinkedHashMap<>();
+    final Map<Class<?>, SimpleBean> beansByClass = new HashMap<>();
 
-    public synchronized void registerBean(SimpleBean bean) {
+    final LinkedHashMap<String, SimpleBean> beansByName = new LinkedHashMap<>();
+
+    public synchronized void registerBean(@Nonnull SimpleBean bean) {
         String name = bean.getBeanInfo().getName();
-        if (beans.containsKey(name)) {
-            throw new BadStateException("bean already registered: %s", name);
+        if (this.beansByName.containsKey(name)) {
+            throw new BadStateException("bean already registered: name=%s", name);
         }
-        beans.put(name, bean);
+
+        Class<?> clazz = bean.getClass();
+        if (this.beansByClass.containsKey(clazz)) {
+            throw new BadStateException("bean already registered: class=%s", clazz);
+        }
+
+        this.beansByName.put(name, bean);
+        this.beansByClass.put(clazz, bean);
     }
 
-    public <T extends SimpleBean> BeanInfo<T> getBeanInfo(String name) {
-        return null;
-    }
-
-    public <T extends SimpleBean> BeanInfo<T> loadBeanInfo(String name) {
-        BeanInfo<T> r = getBeanInfo(name);
+    @SuppressWarnings("unchecked")
+    @Nullable
+    public <T extends SimpleBean> T getBean(@Nonnull Class<T> clazz) {
+        T r = (T) this.beansByClass.get(clazz);
         if (r == null) {
-            throw new BadStateException("bean not found: %s", name);
+            return null;
+        }
+        if (r.getClass() != clazz) {
+            throw new BadStateException("bean class mismatch: expected=%s, actual=%s", clazz, r.getClass());
+        }
+        return r;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Nullable
+    public <T extends SimpleBean> T getBean(@Nonnull String name) {
+        return (T) this.beansByName.get(name);
+    }
+
+    @Nonnull
+    public <T extends SimpleBean> T loadBean(@Nonnull Class<T> clazz) {
+        T r = getBean(clazz);
+        if (r == null) {
+            throw new BadStateException("bean not found: class=%s", clazz);
+        }
+        return r;
+    }
+
+    @Nonnull
+    public <T extends SimpleBean> T loadBean(@Nonnull String name) {
+        T r = getBean(name);
+        if (r == null) {
+            throw new BadStateException("bean not found: name=%s", name);
         }
         return r;
     }
 
     public void refresh() {
-        for (var bean : beans.values()) {
+        for (var bean : this.beansByName.values()) {
             var beanInfo = bean.getBeanInfo();
             if (beanInfo.isInited()) {
                 continue;

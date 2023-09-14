@@ -16,8 +16,8 @@
  */
 package io.github.qiangyt.common.misc;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class Holder<T> {
 

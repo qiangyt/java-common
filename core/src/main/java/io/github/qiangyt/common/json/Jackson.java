@@ -35,8 +35,8 @@ import io.github.qiangyt.common.bean.Dumpable;
 import io.github.qiangyt.common.err.BadStateException;
 import io.github.qiangyt.common.misc.StringHelper;
 import lombok.Getter;
-import jakarta.annotation.Nullable;
-import jakarta.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
 import static java.util.Objects.requireNonNull;
 
 @Getter

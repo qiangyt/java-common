@@ -20,13 +20,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import jakarta.annotation.Nullable;
+import javax.annotation.Nullable;
 
 import io.github.qiangyt.common.json.Jackson;
 import io.github.qiangyt.common.json.JacksonHelper;
 import io.github.qiangyt.common.yaml.SnakeYaml;
 
-import jakarta.annotation.Nonnull;
+import javax.annotation.Nonnull;
 
 /**
  * 方便调试输出（JSON、YAML格式）

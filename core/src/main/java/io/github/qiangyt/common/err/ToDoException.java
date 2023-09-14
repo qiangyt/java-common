@@ -16,7 +16,7 @@
  */
 package io.github.qiangyt.common.err;
 
-import jakarta.annotation.Nonnull;
+import javax.annotation.Nonnull;
 
 public class ToDoException extends GeneralException {
 

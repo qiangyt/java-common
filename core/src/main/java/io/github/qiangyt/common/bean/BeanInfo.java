@@ -22,7 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.github.qiangyt.common.err.BadStateException;
-import jakarta.annotation.Nonnull;
+import javax.annotation.Nonnull;
 import lombok.Getter;
 import static java.util.Objects.requireNonNull;
 

@@ -22,8 +22,8 @@ import net.logstash.logback.argument.StructuredArgument;
 import net.logstash.logback.argument.StructuredArguments;
 import io.github.qiangyt.common.bean.Dumpable;
 
-import jakarta.annotation.Nullable;
-import jakarta.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
 import static java.util.Objects.requireNonNull;
 
 public class LogHelper {

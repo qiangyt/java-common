@@ -24,7 +24,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.Locale;
 
-import jakarta.annotation.Nullable;
+import javax.annotation.Nullable;
 
 public class DurationHelper {
 

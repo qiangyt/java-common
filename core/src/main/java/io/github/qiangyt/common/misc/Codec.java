@@ -24,7 +24,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.regex.Pattern;
 
-import jakarta.annotation.Nullable;
+import javax.annotation.Nullable;
 import io.github.qiangyt.common.err.BadStateException;
 
 import org.apache.commons.codec.DecoderException;

@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import io.github.qiangyt.common.err.BadValueException;
-import jakarta.annotation.Nonnull;
+import javax.annotation.Nonnull;
 import static java.util.Objects.requireNonNull;
 
 public class ClassCache {

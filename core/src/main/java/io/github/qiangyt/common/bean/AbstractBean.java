@@ -19,7 +19,6 @@ package io.github.qiangyt.common.bean;
 import org.slf4j.Logger;
 
 import io.github.qiangyt.common.misc.ClassHelper;
-import jakarta.annotation.Nonnull;
 
 public abstract class AbstractBean implements SimpleBean {
 
@@ -29,7 +28,7 @@ public abstract class AbstractBean implements SimpleBean {
         this(null, dependentBeans);
     }
 
-    protected AbstractBean(@Nonnull String name, SimpleBean... dependentBeans) {
+    protected AbstractBean(String name, SimpleBean... dependentBeans) {
         if (name == null) {
             name = ClassHelper.parseNameSuffix(getClass());
         }
