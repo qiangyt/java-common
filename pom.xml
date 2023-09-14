@@ -9,88 +9,11 @@
 
     <name>${project.groupId}:${project.artifactId}</name>
     <description>Common library project by Yiting Qiang</description>
-    <url>https://github.com/qiangyt/java-common</url>
-
-    <licenses>
-        <license>
-            <name>GNU Lesser General Public License v3.0</name>
-            <url>https://www.gnu.org/licenses/lgpl-3.0.en.html#license-text</url>
-        </license>
-    </licenses>
-
-    <developers>
-        <developer>
-            <name>Yiting Qiang</name>
-            <email>qiangyt@wxcount.com</email>
-            <organization>qiangyt</organization>
-            <organizationUrl>https://github.com/qiangyt</organizationUrl>
-        </developer>
-    </developers>
-
+    
     <modules>
-        <module>bom</module>
-        <module>common-core</module>
         <module>dependencies</module>
+        <module>core</module>
+        <module>bom</module>
     </modules>
-
-    <scm>
-        <connection>scm:git:git://github.com/qiangyt/java-common.git</connection>
-        <developerConnection>scm:git:ssh://github.com/qiangyt/java-common.git</developerConnection>
-        <url>http://github.com/qiangyt/java-common/tree/master</url>
-    </scm>
-
-    <profiles>
-        <profile>
-            <id>release</id>
-            <!-- https://issues.sonatype.org/browse/OSSRH-94538 
-                 https://s01.oss.sonatype.org/content/repositories/snapshots/io/github/qiangyt/
-            -->
-            <distributionManagement>
-                <repository>
-                    <id>ossrh</id>
-                    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-                </repository>
-                <snapshotRepository>
-                    <id>ossrh</id>
-                    <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
-                </snapshotRepository>
-            </distributionManagement>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.sonatype.plugins</groupId>
-                        <artifactId>nexus-staging-maven-plugin</artifactId>
-                        <version>1.6.13</version>
-                        <extensions>true</extensions>
-                        <configuration>
-                            <serverId>ossrh</serverId>
-                            <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
-                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <version>3.1.0</version>
-                        <executions>
-                            <execution>
-                                <id>sign-artifacts</id>
-                                <goals>
-                                    <goal>sign</goal>
-                                </goals>
-                                <phase>verify</phase>
-                                <!--<configuration>
-                                    <gpgArguments>
-                                        <arg> - - pinentry-mode</arg>
-                                        <arg>loopback</arg>
-                                    </gpgArguments>
-                                </configuration>-->
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 
 </project>
