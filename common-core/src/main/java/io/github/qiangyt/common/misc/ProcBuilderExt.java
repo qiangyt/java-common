@@ -59,6 +59,7 @@ public class ProcBuilderExt extends ProcBuilder {
         super(envExpander.expand(command), envExpander.expand(requireNonNull(args)));
 
         this.envExpander = envExpander;
+        withVars(envExpander.getEnvVars());
     }
 
     @Override

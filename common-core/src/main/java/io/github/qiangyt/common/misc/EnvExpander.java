@@ -26,15 +26,13 @@ import static java.util.Objects.requireNonNull;
 import org.apache.commons.text.StringSubstitutor;
 
 import io.github.cdimascio.dotenv.Dotenv;
-import lombok.AccessLevel;
 import lombok.Getter;
 
+@Getter
 public class EnvExpander {
 
-    @Getter
     private StringSubstitutor substitutor;
 
-    @Getter(AccessLevel.PROTECTED)
     private final Map<String, String> envVars;
 
     public EnvExpander() {
