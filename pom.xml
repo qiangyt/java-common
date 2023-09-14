@@ -14,6 +14,9 @@
         <module>dependencies</module>
         <module>core</module>
         <module>bom</module>
+        <module>dependencies-spring</module>
+        <module>spring</module>
+        <module>bom-spring</module>
     </modules>
 
 </project>

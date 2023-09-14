@@ -1,5 +1,5 @@
 /*
- * io.github.qiangyt:qiangyt-common-core - Common library by Yiting Qiang
+ * io.github.qiangyt:qiangyt-common-spring - Common library by Yiting Qiang
  * Copyright © 2023 Yiting Qiang (qiangyt@wxcount.com)
  *
  * This program is free software: you can redistribute it and/or modify

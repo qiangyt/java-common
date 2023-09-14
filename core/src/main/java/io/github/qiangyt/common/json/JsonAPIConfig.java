@@ -17,7 +17,6 @@
 package io.github.qiangyt.common.json;
 
 import jakarta.annotation.Nonnull;
-import org.springframework.validation.annotation.Validated;
 
 import jakarta.annotation.Nullable;
 
@@ -37,7 +36,6 @@ import io.github.qiangyt.common.err.BadStateException;
 
 @Getter
 @Setter
-@Validated
 public class JsonAPIConfig implements Dumpable {
 
     public static final int DEFAULT_CONNECT_TIMEOUT = 10;
