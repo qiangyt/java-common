@@ -70,6 +70,11 @@ public class BeanInfo<T extends SimpleBean> {
         }
     }
 
+    public void dependsOn(@Nonnull SimpleBean... depends) {
+        var container = SimpleContainer.loadCurrent();
+        dependsOn(container, depends);
+    }
+
     synchronized void dependsOn(@Nonnull SimpleContainer container, @Nonnull SimpleBean... depends) {
         ensureNotInited();
 
