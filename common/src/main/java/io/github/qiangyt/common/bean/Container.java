@@ -195,7 +195,7 @@ public class Container {
 
         try {
             CURRENT.set(this);
-            builder.build();
+            builder.build(this);
         } catch (Exception ex) {
             throw new BadStateException(ex, "%s - failed to build container", getName());
         } finally {
