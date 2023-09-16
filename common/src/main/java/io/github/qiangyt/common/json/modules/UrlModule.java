@@ -16,52 +16,48 @@
  */
 package io.github.qiangyt.common.json.modules;
 
-import java.io.IOException;
 import java.net.URL;
 
-import jakarta.annotation.Nonnull;
-
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import io.github.qiangyt.common.json.JacksonDeserializer;
+import io.github.qiangyt.common.json.JacksonSerializer;
+import jakarta.annotation.Nonnull;
 
 public class UrlModule {
 
     @Nonnull
-    public static SimpleModule build() {
+    public static SimpleModule build(boolean expandEnv, boolean dump) {
         var r = new SimpleModule();
-        r.addSerializer(URL.class, new Serializer());
-        r.addDeserializer(URL.class, new Deserialize());
+        r.addSerializer(URL.class, new Serializer(dump));
+        r.addDeserializer(URL.class, new Deserializer(expandEnv));
         return r;
     }
 
-    public static class Serializer extends JsonSerializer<URL> {
+    public static class Serializer extends JacksonSerializer<URL> {
+
+        public Serializer(boolean dump) {
+            super(dump);
+        }
 
         @Override
-        public void serialize(URL value, JsonGenerator gen, SerializerProvider serializers)
-                throws IOException, JsonProcessingException {
-
-            if (value == null) {
-                gen.writeNull();
-            } else {
-                gen.writeString(value.toString());
-            }
+        protected void dump(URL value, @Nonnull JsonGenerator gen) throws Exception {
+            gen.writeString(value.toString());
         }
     }
 
-    public static class Deserialize extends JsonDeserializer<URL> {
+    public static class Deserializer extends JacksonDeserializer<URL> {
+
+        public Deserializer(boolean expandEnv) {
+            super(expandEnv);
+        }
 
         @Override
-        public URL deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-            String valueText = p.getValueAsString();
-            return new URL(valueText);
+        protected URL deserialize(@Nonnull String text) throws Exception {
+            return new URL(text);
         }
+
     }
 
 }

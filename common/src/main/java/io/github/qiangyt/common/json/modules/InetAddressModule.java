@@ -16,53 +16,48 @@
  */
 package io.github.qiangyt.common.json.modules;
 
-import java.io.IOException;
 import java.net.InetSocketAddress;
 
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.core.JsonProcessingException;
+
+import io.github.qiangyt.common.json.JacksonDeserializer;
+import io.github.qiangyt.common.json.JacksonSerializer;
+import jakarta.annotation.Nonnull;
 
 public class InetAddressModule {
 
-    public static SimpleModule build() {
+    public static SimpleModule build(boolean expandEnv, boolean dump) {
         var r = new SimpleModule();
-        r.addSerializer(InetSocketAddress.class, new Serializer());
-        r.addDeserializer(InetSocketAddress.class, new Deserializer());
+        r.addSerializer(InetSocketAddress.class, new Serializer(dump));
+        r.addDeserializer(InetSocketAddress.class, new Deserializer(expandEnv));
         return r;
     }
 
-    public static class Serializer extends JsonSerializer<InetSocketAddress> {
+    public static class Serializer extends JacksonSerializer<InetSocketAddress> {
+
+        public Serializer(boolean dump) {
+            super(dump);
+        }
 
         @Override
-        public void serialize(InetSocketAddress value, JsonGenerator gen, SerializerProvider serializers)
-                throws IOException, JsonProcessingException {
-
-            if (value == null) {
-                gen.writeNull();
-            } else {
-                var text = value.getHostString() + ":" + value.getPort();
-                gen.writeString(text);
-            }
+        protected void dump(InetSocketAddress value, @Nonnull JsonGenerator gen) throws Exception {
+            var text = value.getHostString() + ":" + value.getPort();
+            gen.writeString(text);
         }
     }
 
-    public static class Deserializer extends JsonDeserializer<InetSocketAddress> {
+    public static class Deserializer extends JacksonDeserializer<InetSocketAddress> {
+
+        public Deserializer(boolean expandEnv) {
+            super(expandEnv);
+        }
 
         @Override
-        public InetSocketAddress deserialize(JsonParser p, DeserializationContext ctxt)
-                throws IOException, JsonProcessingException {
-
-            String valueText = p.getValueAsString();
-
-            var idx = valueText.lastIndexOf(':');
-            var host = valueText.substring(0, idx);
-            var port = Integer.valueOf(valueText.substring(idx + 1));
+        protected InetSocketAddress deserialize(@Nonnull String text) throws Exception {
+            var idx = text.lastIndexOf(':');
+            var host = text.substring(0, idx);
+            var port = Integer.valueOf(text.substring(idx + 1));
             return new InetSocketAddress(host, port);
         }
     }

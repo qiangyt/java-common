@@ -55,11 +55,15 @@ import io.github.qiangyt.common.misc.VfsHelper;
 
 public class KeysHelper {
 
-    public static @Nonnull KeyPair readKeyPair(@Nonnull Reader keyPairReader) {
-        requireNonNull(keyPairReader);
+    public static boolean isKey(@Nonnull String keyText) {
+        return keyText.contains("-----BEGIN");
+    }
+
+    public static @Nonnull KeyPair readKeyPair(@Nonnull Reader reader) {
+        requireNonNull(reader);
 
         try {
-            var r = KeyPairUtils.readKeyPair(keyPairReader);
+            var r = KeyPairUtils.readKeyPair(reader);
             requireNonNull(r);
             return r;
         } catch (IOException e) {
@@ -67,18 +71,18 @@ public class KeysHelper {
         }
     }
 
-    public static @Nonnull KeyPair readKeyPair(@Nonnull String keyPairText) {
-        requireNonNull(keyPairText);
+    public static @Nonnull KeyPair readKeyPair(@Nonnull String text) {
+        requireNonNull(text);
 
-        try (var reader = new StringReader(keyPairText)) {
+        try (var reader = new StringReader(text)) {
             return readKeyPair(reader);
         }
     }
 
-    public static @Nonnull KeyPair readKeyPairFile(@Nonnull String keyPairFilePath) {
-        requireNonNull(keyPairFilePath);
+    public static @Nonnull KeyPair readKeyPairFile(@Nonnull String file) {
+        requireNonNull(file);
 
-        var fo = VfsHelper.resolveFile(keyPairFilePath);
+        var fo = VfsHelper.resolveFile(file);
         return readKeyPairFile(fo);
     }
 
@@ -252,7 +256,6 @@ public class KeysHelper {
         return requireNonNull(readCertPem(pemText));
     }
 
-    @SuppressWarnings({ "null" })
     public static @Nonnull List<X509Certificate> readCertsPem(@Nonnull String pemText) {
         requireNonNull(pemText);
 

@@ -16,59 +16,46 @@
  */
 package io.github.qiangyt.common.json.modules;
 
-import java.io.IOException;
 import java.io.File;
 
-import jakarta.annotation.Nonnull;
-
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
-import io.github.qiangyt.common.err.BadValueException;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
+import io.github.qiangyt.common.json.JacksonDeserializer;
+import io.github.qiangyt.common.json.JacksonSerializer;
+import jakarta.annotation.Nonnull;
 
 public class FileModule {
 
     @Nonnull
-    public static SimpleModule build() {
+    public static SimpleModule build(boolean expandEnv, boolean dump) {
         var r = new SimpleModule();
-        r.addSerializer(File.class, new Serializer());
-        r.addDeserializer(File.class, new Deserialize());
+        r.addSerializer(File.class, new Serializer(dump));
+        r.addDeserializer(File.class, new Deserializer(expandEnv));
         return r;
     }
 
-    public static class Serializer extends JsonSerializer<File> {
+    public static class Serializer extends JacksonSerializer<File> {
+
+        public Serializer(boolean dump) {
+            super(dump);
+        }
 
         @Override
-        public void serialize(File value, JsonGenerator gen, SerializerProvider serializers)
-                throws IOException, JsonProcessingException {
-
-            if (value == null) {
-                gen.writeNull();
-            } else {
-                gen.writeString(value.getPath());
-            }
+        protected void dump(File value, @Nonnull JsonGenerator gen) throws Exception {
+            gen.writeString(value.getPath());
         }
     }
 
-    public static class Deserialize extends JsonDeserializer<File> {
+    public static class Deserializer extends JacksonDeserializer<File> {
+
+        public Deserializer(boolean expandEnv) {
+            super(expandEnv);
+        }
 
         @Override
-        public File deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-
-            String valueText = p.getValueAsString();
-
-            try {
-                return new File(valueText);
-            } catch (NumberFormatException ex) {
-                throw new BadValueException(ex, "%s is NOT a long value", valueText);
-            }
+        protected File deserialize(@Nonnull String text) throws Exception {
+            return new File(text);
         }
     }
 

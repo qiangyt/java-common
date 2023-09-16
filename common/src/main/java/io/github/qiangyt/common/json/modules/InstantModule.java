@@ -16,60 +16,46 @@
  */
 package io.github.qiangyt.common.json.modules;
 
-import java.io.IOException;
 import java.time.Instant;
 
-import jakarta.annotation.Nonnull;
-
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
-import io.github.qiangyt.common.err.BadValueException;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
+import io.github.qiangyt.common.json.JacksonDeserializer;
+import io.github.qiangyt.common.json.JacksonSerializer;
+import jakarta.annotation.Nonnull;
 
 public class InstantModule {
 
     @Nonnull
-    public static SimpleModule build() {
+    public static SimpleModule build(boolean expandEnv, boolean dump) {
         var r = new SimpleModule();
-        r.addSerializer(Instant.class, new Serializer());
-        r.addDeserializer(Instant.class, new Deserialize());
+        r.addSerializer(Instant.class, new Serializer(dump));
+        r.addDeserializer(Instant.class, new Deserializer(expandEnv));
         return r;
     }
 
-    public static class Serializer extends JsonSerializer<Instant> {
+    public static class Serializer extends JacksonSerializer<Instant> {
+
+        public Serializer(boolean dump) {
+            super(dump);
+        }
 
         @Override
-        public void serialize(Instant value, JsonGenerator gen, SerializerProvider serializers)
-                throws IOException, JsonProcessingException {
-
-            if (value == null) {
-                gen.writeNull();
-            } else {
-                gen.writeString(value.toString());
-            }
+        protected void dump(Instant value, @Nonnull JsonGenerator gen) throws Exception {
+            gen.writeString(value.toString());
         }
     }
 
-    public static class Deserialize extends JsonDeserializer<Instant> {
+    public static class Deserializer extends JacksonDeserializer<Instant> {
+
+        public Deserializer(boolean expandEnv) {
+            super(expandEnv);
+        }
 
         @Override
-        public Instant deserialize(JsonParser p, DeserializationContext ctxt)
-                throws IOException, JsonProcessingException {
-
-            String valueText = p.getValueAsString();
-
-            try {
-                return Instant.parse(valueText);
-            } catch (NumberFormatException ex) {
-                throw new BadValueException(ex, "%s is NOT a long value", valueText);
-            }
+        protected Instant deserialize(@Nonnull String text) throws Exception {
+            return Instant.parse(text);
         }
     }
 

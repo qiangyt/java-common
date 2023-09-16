@@ -14,9 +14,11 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package io.github.qiangyt.common.json.modules;
+package io.github.qiangyt.common.security.jackson;
 
-import java.util.Date;
+import java.util.HashMap;
+
+import org.shredzone.acme4j.challenge.Dns01Challenge;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -25,38 +27,42 @@ import io.github.qiangyt.common.json.JacksonDeserializer;
 import io.github.qiangyt.common.json.JacksonSerializer;
 import jakarta.annotation.Nonnull;
 
-public class DateModule {
+public class Dns01ChallengeModule {
 
-    @Nonnull
-    public static SimpleModule build(boolean expandEnv, boolean dump) {
-        var r = new SimpleModule();
-        r.addSerializer(Date.class, new Serializer(dump));
-        r.addDeserializer(Date.class, new Deserializer(expandEnv));
-        return r;
-    }
-
-    public static class Serializer extends JacksonSerializer<Date> {
+    public static class Serializer extends JacksonSerializer<Dns01Challenge> {
 
         public Serializer(boolean dump) {
             super(dump);
         }
 
         @Override
-        protected void dump(Date value, @Nonnull JsonGenerator gen) throws Exception {
-            gen.writeNumber(value.getTime());
+        protected void dump(Dns01Challenge value, @Nonnull JsonGenerator gen) throws Exception {
+            var r = new HashMap<String, Object>();
+            r.put("authorization", value.getAuthorization());
+            r.put("digest", value.getDigest());
+            r.put("error", value.getError());
+            r.put("location", value.getLocation());
+            r.put("type", value.getType());
+            r.put("validated", value.getValidated());
+            r.put("status", value.getStatus());
+
+            gen.writeObject(r);
         }
     }
 
-    public static class Deserializer extends JacksonDeserializer<Date> {
+    public static class Deserializer extends JacksonDeserializer<Dns01Challenge> {
 
         public Deserializer(boolean expandEnv) {
             super(expandEnv);
         }
+    }
 
-        @Override
-        protected Date deserialize(@Nonnull String text) throws Exception {
-            return new Date(Long.valueOf(text));
-        }
+    @Nonnull
+    public static SimpleModule build(boolean expandEnv, boolean dump) {
+        var r = new SimpleModule();
+        r.addSerializer(Dns01Challenge.class, new Serializer(dump));
+        r.addDeserializer(Dns01Challenge.class, new Deserializer(expandEnv));
+        return r;
     }
 
 }

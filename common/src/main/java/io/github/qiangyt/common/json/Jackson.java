@@ -16,6 +16,8 @@
  */
 package io.github.qiangyt.common.json;
 
+import static java.util.Objects.requireNonNull;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
@@ -29,25 +31,33 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import io.github.qiangyt.common.bean.Dumpable;
 import io.github.qiangyt.common.err.BadStateException;
-import io.github.qiangyt.common.json.modules.CertModules;
 import io.github.qiangyt.common.json.modules.DateModule;
 import io.github.qiangyt.common.json.modules.FileModule;
+import io.github.qiangyt.common.json.modules.FileObjectModule;
 import io.github.qiangyt.common.json.modules.InetAddressModule;
 import io.github.qiangyt.common.json.modules.InstantModule;
 import io.github.qiangyt.common.json.modules.ProcResultModule;
 import io.github.qiangyt.common.json.modules.UriModule;
 import io.github.qiangyt.common.json.modules.UrlModule;
 import io.github.qiangyt.common.misc.StringHelper;
-import lombok.Getter;
+import io.github.qiangyt.common.security.jackson.SecurityModules;
 import jakarta.annotation.Nonnull;
-import static java.util.Objects.requireNonNull;
+import lombok.Getter;
 
 @Getter
 // @ThreadSafe
 public class Jackson {
 
     @Nonnull
-    public static final Jackson DEFAULT = new Jackson(buildDefaultMapper());
+    public static final Jackson DEFAULT = new Jackson(buildDefaultMapper(false, false));
+
+    @Nonnull
+    public static final Jackson ENV_DEFAULT = new Jackson(buildDefaultMapper(true, false));
+
+    @Nonnull
+    public static final Jackson DUMP = new Jackson(buildDefaultMapper(false, false));
+    @Nonnull
+    public static final Jackson ENV_DUMP = new Jackson(buildDefaultMapper(true, false));
 
     public final ObjectMapper mapper;
 
@@ -56,25 +66,26 @@ public class Jackson {
     }
 
     @Nonnull
-    public static ObjectMapper buildDefaultMapper() {
+    public static ObjectMapper buildDefaultMapper(boolean expandEnv, boolean dump) {
         var r = new ObjectMapper();
-        initDefaultMapper(r);
+        initDefaultMapper(r, expandEnv, dump);
         return r;
     }
 
-    public static void initDefaultMapper(@Nonnull ObjectMapper mapper) {
+    public static void initDefaultMapper(@Nonnull ObjectMapper mapper, boolean expandEnv, boolean dump) {
         requireNonNull(mapper);
 
-        mapper.registerModule(FileModule.build());
-        mapper.registerModule(DateModule.build());
+        mapper.registerModule(FileModule.build(expandEnv, dump));
+        mapper.registerModule(FileObjectModule.build(expandEnv, dump));
+        mapper.registerModule(DateModule.build(expandEnv, dump));
         mapper.registerModule(new JavaTimeModule());
-        mapper.registerModule(InstantModule.build());
-        mapper.registerModule(ProcResultModule.build());
-        mapper.registerModule(UriModule.build());
-        mapper.registerModule(UrlModule.build());
-        mapper.registerModule(InetAddressModule.build());
+        mapper.registerModule(InstantModule.build(expandEnv, dump));
+        mapper.registerModule(ProcResultModule.build(expandEnv, dump));
+        mapper.registerModule(UriModule.build(expandEnv, dump));
+        mapper.registerModule(UrlModule.build(expandEnv, dump));
+        mapper.registerModule(InetAddressModule.build(expandEnv, dump));
 
-        CertModules.register(mapper);
+        SecurityModules.register(mapper, expandEnv, dump);
 
         mapper.setSerializationInclusion(Include.NON_NULL);
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);

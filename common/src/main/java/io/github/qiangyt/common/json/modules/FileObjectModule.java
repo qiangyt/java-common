@@ -16,46 +16,47 @@
  */
 package io.github.qiangyt.common.json.modules;
 
-import java.util.Date;
+import org.apache.commons.vfs2.FileObject;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
 import io.github.qiangyt.common.json.JacksonDeserializer;
 import io.github.qiangyt.common.json.JacksonSerializer;
+import io.github.qiangyt.common.misc.VfsHelper;
 import jakarta.annotation.Nonnull;
 
-public class DateModule {
+public class FileObjectModule {
 
     @Nonnull
     public static SimpleModule build(boolean expandEnv, boolean dump) {
         var r = new SimpleModule();
-        r.addSerializer(Date.class, new Serializer(dump));
-        r.addDeserializer(Date.class, new Deserializer(expandEnv));
+        r.addSerializer(FileObject.class, new Serializer(dump));
+        r.addDeserializer(FileObject.class, new Deserializer(expandEnv));
         return r;
     }
 
-    public static class Serializer extends JacksonSerializer<Date> {
+    public static class Serializer extends JacksonSerializer<FileObject> {
 
         public Serializer(boolean dump) {
             super(dump);
         }
 
         @Override
-        protected void dump(Date value, @Nonnull JsonGenerator gen) throws Exception {
-            gen.writeNumber(value.getTime());
+        protected void dump(FileObject value, @Nonnull JsonGenerator gen) throws Exception {
+            gen.writeString(value.getPath().toString());
         }
     }
 
-    public static class Deserializer extends JacksonDeserializer<Date> {
+    public static class Deserializer extends JacksonDeserializer<FileObject> {
 
         public Deserializer(boolean expandEnv) {
             super(expandEnv);
         }
 
         @Override
-        protected Date deserialize(@Nonnull String text) throws Exception {
-            return new Date(Long.valueOf(text));
+        protected FileObject deserialize(@Nonnull String text) throws Exception {
+            return VfsHelper.resolveFile(text);
         }
     }
 

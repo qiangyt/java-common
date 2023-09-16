@@ -19,6 +19,7 @@ package io.github.qiangyt.common.misc;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 import jakarta.annotation.Nonnull;
 import static java.util.Objects.requireNonNull;
@@ -30,6 +31,8 @@ import lombok.Getter;
 
 @Getter
 public class EnvExpander {
+
+    private static final ThreadLocal<EnvExpander> CURRENT = new ThreadLocal<>();
 
     @Nonnull
     private StringSubstitutor substitutor;
@@ -82,8 +85,37 @@ public class EnvExpander {
         return this;
     }
 
+    public static void setCurrent(@Nonnull EnvExpander expander) {
+        CURRENT.set(expander);
+    }
+
+    public static String expands(@Nonnull String input) {
+        var inst = CURRENT.get();
+        requireNonNull(inst);
+
+        return inst.expand(input);
+    }
+
+    public static String tryExpands(@Nonnull String input) {
+        var inst = CURRENT.get();
+        if (inst == null) {
+            return input;
+        }
+
+        return inst.expand(input);
+    }
+
     public @Nonnull String expand(@Nonnull String input) {
         return requireNonNull(getSubstitutor().replace(input));
+    }
+
+    public @Nonnull String expand(@Nonnull String text, Function<String, String> func) {
+        CURRENT.set(this);
+        try {
+            return func.apply(text);
+        } finally {
+            CURRENT.remove();
+        }
     }
 
     public @Nonnull String[] expand(@Nonnull String[] args) {

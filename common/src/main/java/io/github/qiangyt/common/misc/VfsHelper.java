@@ -34,6 +34,10 @@ import io.github.qiangyt.common.err.BadStateException;
 
 public class VfsHelper {
 
+    public static boolean isFile(@Nonnull String pathOrElse) {
+        return pathOrElse.contains("://");
+    }
+
     /**
      * Resolve a file by path.
      *

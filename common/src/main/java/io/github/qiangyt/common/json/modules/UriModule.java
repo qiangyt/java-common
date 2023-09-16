@@ -16,60 +16,46 @@
  */
 package io.github.qiangyt.common.json.modules;
 
-import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 
-import jakarta.annotation.Nonnull;
-
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
-import io.github.qiangyt.common.err.BadValueException;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
+import io.github.qiangyt.common.json.JacksonDeserializer;
+import io.github.qiangyt.common.json.JacksonSerializer;
+import jakarta.annotation.Nonnull;
 
 public class UriModule {
 
     @Nonnull
-    public static SimpleModule build() {
+    public static SimpleModule build(boolean expandEnv, boolean dump) {
         var r = new SimpleModule();
-        r.addSerializer(URI.class, new Serializer());
-        r.addDeserializer(URI.class, new Deserialize());
+        r.addSerializer(URI.class, new Serializer(dump));
+        r.addDeserializer(URI.class, new Deserializer(expandEnv));
         return r;
     }
 
-    public static class Serializer extends JsonSerializer<URI> {
+    public static class Serializer extends JacksonSerializer<URI> {
+
+        public Serializer(boolean dump) {
+            super(dump);
+        }
 
         @Override
-        public void serialize(URI value, JsonGenerator gen, SerializerProvider serializers)
-                throws IOException, JsonProcessingException {
-
-            if (value == null) {
-                gen.writeNull();
-            } else {
-                gen.writeString(value.toString());
-            }
+        protected void dump(URI value, @Nonnull JsonGenerator gen) throws Exception {
+            gen.writeString(value.toString());
         }
     }
 
-    public static class Deserialize extends JsonDeserializer<URI> {
+    public static class Deserializer extends JacksonDeserializer<URI> {
+
+        public Deserializer(boolean expandEnv) {
+            super(expandEnv);
+        }
 
         @Override
-        public URI deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-
-            String valueText = p.getValueAsString();
-
-            try {
-                return new URI(valueText);
-            } catch (URISyntaxException ex) {
-                throw new BadValueException(ex, "%s is NOT a URI value", valueText);
-            }
+        protected URI deserialize(@Nonnull String text) throws Exception {
+            return new URI(text);
         }
     }
 

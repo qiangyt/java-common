@@ -22,7 +22,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.github.qiangyt.common.err.BadStateException;
-import io.github.qiangyt.common.misc.ClassHelper;
 import jakarta.annotation.Nonnull;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -60,6 +59,12 @@ public class BeanInfo<T> {
     @Nonnull
     public Logger log() {
         return this.log;
+    }
+
+    @Override
+    public String toString() {
+        var inst = getInstance();
+        return String.format("name=%s, class=%s, instance=%s", getName(), inst.getClass(), inst);
     }
 
     public synchronized boolean doesDependsOn(@Nonnull String name) {

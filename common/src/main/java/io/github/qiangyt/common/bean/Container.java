@@ -92,8 +92,7 @@ public class Container {
             var inst = bi.getInstance();
             if (inst != instance) {
                 // but instance is different
-                throw new BadStateException("%s - bean already registered: name=%s, class=%s, instance=%s", getName(),
-                        bi.getName(), inst.getClass(), inst);
+                throw new BadStateException("%s - bean already registered: %s", getName(), bi);
             }
         } else {
             // name not registered
@@ -106,8 +105,7 @@ public class Container {
             var inst = bi.getInstance();
             if (inst != instance) {
                 // but instance is different
-                throw new BadStateException("%s - bean already registered: name=%s, class=%s, instance=%s", getName(),
-                        bi.getName(), inst.getClass(), inst);
+                throw new BadStateException("%s - bean already registered: %s", bi);
             }
         } else {
             // class not registered

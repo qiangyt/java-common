@@ -16,63 +16,57 @@
  */
 package io.github.qiangyt.common.json.modules;
 
-import java.io.IOException;
 import java.util.HashMap;
-
-import jakarta.annotation.Nonnull;
 
 import org.buildobjects.process.ProcResult;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
 import io.github.qiangyt.common.err.BadValueException;
+import io.github.qiangyt.common.json.JacksonDeserializer;
+import io.github.qiangyt.common.json.JacksonSerializer;
+import jakarta.annotation.Nonnull;
 
 public class ProcResultModule {
 
     @Nonnull
-    public static SimpleModule build() {
+    public static SimpleModule build(boolean expandEnv, boolean dump) {
         var r = new SimpleModule();
 
-        r.addSerializer(ProcResult.class, new ProcResultSerializer());
-        r.addDeserializer(ProcResult.class, new ProcResultDeserializer());
+        r.addSerializer(ProcResult.class, new Serializer(dump));
+        r.addDeserializer(ProcResult.class, new Deserializer(expandEnv));
 
         return r;
     }
 
-    public static class ProcResultSerializer extends JsonSerializer<ProcResult> {
+    public static class Serializer extends JacksonSerializer<ProcResult> {
+
+        public Serializer(boolean dump) {
+            super(dump);
+        }
 
         @Override
-        public void serialize(ProcResult value, JsonGenerator gen, SerializerProvider serializers)
-                throws IOException, JsonProcessingException {
+        protected void dump(ProcResult value, @Nonnull JsonGenerator gen) throws Exception {
+            var r = new HashMap<String, Object>();
+            r.put("exitValue", value.getExitValue());
+            r.put("stdout", value.getOutputString());
+            r.put("stderr", value.getErrorString());
+            r.put("executionTime", value.getExecutionTime());
+            r.put("commandLine", value.getCommandLine());
 
-            if (value == null) {
-                gen.writeNull();
-            } else {
-                var r = new HashMap<String, Object>();
-                r.put("exitValue", value.getExitValue());
-                r.put("stdout", value.getOutputString());
-                r.put("stderr", value.getErrorString());
-                r.put("executionTime", value.getExecutionTime());
-                r.put("commandLine", value.getCommandLine());
-
-                gen.writeObject(r);
-            }
+            gen.writeObject(r);
         }
     }
 
-    public static class ProcResultDeserializer extends JsonDeserializer<ProcResult> {
+    public static class Deserializer extends JacksonDeserializer<ProcResult> {
+
+        public Deserializer(boolean expandEnv) {
+            super(expandEnv);
+        }
 
         @Override
-        public ProcResult deserialize(JsonParser p, DeserializationContext ctxt)
-                throws IOException, JsonProcessingException {
-
+        protected ProcResult deserialize(@Nonnull String text) throws Exception {
             throw new BadValueException("%s deserialization is NOT supported", ProcResult.class.getSimpleName());
         }
     }
