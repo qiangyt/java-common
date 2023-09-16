@@ -28,7 +28,7 @@ import lombok.Getter;
 import static java.util.Objects.requireNonNull;
 
 @Getter
-public class BeanInfo<T extends SimpleBean> {
+public class BeanInfo<T extends Bean> {
 
     @Nonnull
     final T instance;
@@ -49,7 +49,7 @@ public class BeanInfo<T extends SimpleBean> {
     @Getter(AccessLevel.NONE)
     LinkedHashMap<String, BeanInfo<?>> dependedBy = new LinkedHashMap<>();
 
-    public BeanInfo(@Nonnull T instance, @Nonnull String name, @Nonnull SimpleBean... dependsOn) {
+    public BeanInfo(@Nonnull T instance, @Nonnull String name, @Nonnull Bean... dependsOn) {
         this.instance = requireNonNull(instance);
         this.name = requireNonNull(name);
         this.inited = false;
@@ -75,12 +75,12 @@ public class BeanInfo<T extends SimpleBean> {
         }
     }
 
-    public void dependsOn(@Nonnull SimpleBean... depends) {
-        var container = SimpleContainer.loadCurrent();
+    public void dependsOn(@Nonnull Bean... depends) {
+        var container = Container.loadCurrent();
         dependsOn(container, depends);
     }
 
-    synchronized void dependsOn(@Nonnull SimpleContainer container, @Nonnull SimpleBean... depends) {
+    synchronized void dependsOn(@Nonnull Container container, @Nonnull Bean... depends) {
         ensureNotInited();
 
         var _dependsOn = new LinkedHashMap<String, BeanInfo<?>>(this.dependsOn);

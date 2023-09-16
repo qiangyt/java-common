@@ -21,18 +21,18 @@ import lombok.Getter;
 
 import io.github.qiangyt.common.misc.ClassHelper;
 
-public abstract class AbstractBean<T extends SimpleBean> implements SimpleBean {
+public abstract class AbstractBean<T extends Bean> implements Bean {
 
     @Getter
     @Nonnull
     final BeanInfo<T> beanInfo;
 
     @SuppressWarnings("unchecked")
-    protected AbstractBean(String name, @Nonnull SimpleBean... dependsOn) {
+    protected AbstractBean(String name, @Nonnull Bean... dependsOn) {
         if (name == null) {
             name = ClassHelper.parseTitle(getClass());
         }
-        this.beanInfo = (BeanInfo<T>) SimpleContainer.loadCurrent().registerBean(this, name, dependsOn);
+        this.beanInfo = (BeanInfo<T>) Container.loadCurrent().registerBean(this, name, dependsOn);
     }
 
 }
