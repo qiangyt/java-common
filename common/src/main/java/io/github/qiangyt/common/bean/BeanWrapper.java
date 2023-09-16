@@ -31,7 +31,7 @@ public class BeanWrapper<T> implements Bean {
             name = ClassHelper.parseTitle(getClass());
         }
 
-        this.beanInfo = (BeanInfo<BeanWrapper<T>>) Container.loadCurrent().registerBean(this, name);
+        this.beanInfo = (BeanInfo<BeanWrapper<T>>) Container.loadCurrent().tryToRegisterBean(this, name);
     }
 
 }
