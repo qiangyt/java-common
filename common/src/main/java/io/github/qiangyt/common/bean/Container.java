@@ -38,9 +38,6 @@ public class Container {
     final Logger log;
 
     @Nonnull
-    final BeansBuilder builder;
-
-    @Nonnull
     final String name;
 
     @Getter(AccessLevel.NONE)
@@ -51,11 +48,10 @@ public class Container {
 
     volatile boolean locked;
 
-    public Container(@Nonnull String name, @Nonnull BeansBuilder builder) {
+    public Container(@Nonnull String name) {
         this.log = LoggerFactory.getLogger(name + "@" + ClassHelper.parseTitle(getClass()));
         this.locked = false;
         this.name = name;
-        this.builder = builder;
     }
 
     @Nonnull
@@ -87,7 +83,8 @@ public class Container {
         BeanInfo<T> r = getBeanInfo(beanName);
         if (r != null) {
             if (r.getInstance() != instance) {
-                throw new BadStateException("%s - bean already registered: name=%s, instance=%s", getName(), beanName);
+                throw new BadStateException("%s - bean already registered: name=%s, instance=%s", getName(), beanName,
+                        instance);
             }
             return r;
         }
@@ -96,7 +93,7 @@ public class Container {
     }
 
     public synchronized <T extends Bean> BeanInfo<T> registerBean(@Nonnull T instance, @Nonnull String beanName,
-            @Nonnull Bean... dependsOn) {
+            @Nonnull Object... dependsOn) {
         if (this.beansByName.containsKey(beanName)) {
             throw new BadStateException("%s - bean already registered: name=%s", getName(), beanName);
         }
@@ -109,8 +106,8 @@ public class Container {
         return doRegisterBean(instance, beanName, dependsOn);
     }
 
-    synchronized <T extends Bean> BeanInfo<T> doRegisterBean(@Nonnull T instance, @Nonnull String beanName,
-            @Nonnull Bean... dependsOn) {
+    synchronized <T> BeanInfo<T> doRegisterBean(@Nonnull T instance, @Nonnull String beanName,
+            @Nonnull Object... dependsOn) {
         ensureNotLocked();
 
         var r = new BeanInfo<T>(instance, beanName, dependsOn);
@@ -189,7 +186,7 @@ public class Container {
         return r;
     }
 
-    public synchronized void build() {
+    public synchronized void build(@Nonnull BeansBuilder builder) {
         ensureNotLocked();
 
         if (CURRENT.get() != null) {
@@ -198,7 +195,7 @@ public class Container {
 
         try {
             CURRENT.set(this);
-            getBuilder().build();
+            builder.build();
         } catch (Exception ex) {
             throw new BadStateException(ex, "%s - failed to build container", getName());
         } finally {

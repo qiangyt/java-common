@@ -45,14 +45,4 @@ public interface Bean {
     default void destroy() throws Exception {
     }
 
-    @Nonnull
-    static <T> BeanWrapper<T> wrap(@Nonnull T instance, @Nonnull String name) {
-        return new BeanWrapper<T>(instance, name);
-    }
-
-    @Nonnull
-    static <T> BeanWrapper<T> wrap(@Nonnull T instance) {
-        return new BeanWrapper<T>(instance);
-    }
-
 }

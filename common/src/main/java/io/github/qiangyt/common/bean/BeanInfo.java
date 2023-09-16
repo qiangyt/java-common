@@ -22,13 +22,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.github.qiangyt.common.err.BadStateException;
+import io.github.qiangyt.common.misc.ClassHelper;
 import jakarta.annotation.Nonnull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import static java.util.Objects.requireNonNull;
 
 @Getter
-public class BeanInfo<T extends Bean> {
+public class BeanInfo<T> {
 
     @Nonnull
     final T instance;
@@ -49,7 +50,7 @@ public class BeanInfo<T extends Bean> {
     @Getter(AccessLevel.NONE)
     LinkedHashMap<String, BeanInfo<?>> dependedBy = new LinkedHashMap<>();
 
-    public BeanInfo(@Nonnull T instance, @Nonnull String name, @Nonnull Bean... dependsOn) {
+    public BeanInfo(@Nonnull T instance, @Nonnull String name, @Nonnull Object... dependsOn) {
         this.instance = requireNonNull(instance);
         this.name = requireNonNull(name);
         this.inited = false;
@@ -75,12 +76,12 @@ public class BeanInfo<T extends Bean> {
         }
     }
 
-    public void dependsOn(@Nonnull Bean... depends) {
+    public void dependsOn(@Nonnull Object... depends) {
         var container = Container.loadCurrent();
         dependsOn(container, depends);
     }
 
-    synchronized void dependsOn(@Nonnull Container container, @Nonnull Bean... depends) {
+    synchronized void dependsOn(@Nonnull Container container, @Nonnull Object... depends) {
         ensureNotInited();
 
         var _dependsOn = new LinkedHashMap<String, BeanInfo<?>>(this.dependsOn);
@@ -89,7 +90,7 @@ public class BeanInfo<T extends Bean> {
         for (var depBean : depends) {
             requireNonNull(depBean);
 
-            var depName = depBean.getName();
+            var depName = ClassHelper.parseBeanName(depBean);
             var depInfo = container.loadBeanInfo(depName);
 
             if (_dependsOn.containsKey(depName)) {
@@ -116,10 +117,13 @@ public class BeanInfo<T extends Bean> {
 
         this.dependsOn.values().forEach(BeanInfo::init);
 
-        try {
-            getInstance().init();
-        } catch (Exception e) {
-            throw new BadStateException(e, "bean %s - failed to init", getName());
+        var inst = getInstance();
+        if (inst instanceof Bean) {
+            try {
+                ((Bean) inst).init();
+            } catch (Exception e) {
+                throw new BadStateException(e, "bean %s - failed to init", getName());
+            }
         }
 
         this.inited = true;
@@ -132,15 +136,20 @@ public class BeanInfo<T extends Bean> {
 
         this.dependedBy.values().forEach(BeanInfo::destroy);
 
-        try {
-            getInstance().destroy();
-            return true;
-        } catch (Exception e) {
-            log().error("bean {} - failed to destroy", getName(), e);
-            return false;
-        } finally {
-            this.inited = false;
+        var inst = getInstance();
+        if (inst instanceof Bean) {
+            try {
+                ((Bean) inst).destroy();
+                return true;
+            } catch (Exception e) {
+                log().error("bean {} - failed to destroy", getName(), e);
+                return false;
+            } finally {
+                this.inited = false;
+            }
         }
+
+        return true;
 
     }
 
