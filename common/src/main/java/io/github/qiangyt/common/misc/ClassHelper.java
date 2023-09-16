@@ -23,7 +23,6 @@ import jakarta.annotation.Nonnull;
  */
 public class ClassHelper {
 
-    @SuppressWarnings("null")
     @Nonnull
     public static String parseTitle(@Nonnull Class<?> clazz) {
         var n = clazz.getSimpleName();
@@ -32,6 +31,12 @@ public class ClassHelper {
             return n;
         }
         return n.substring(pos + 1);
+    }
+
+    @Nonnull
+    public static String parseBeanName(@Nonnull Class<?> clazz) {
+        var r = parseTitle(clazz);
+        return r.substring(0, 1).toLowerCase() + r.substring(1);
     }
 
 }

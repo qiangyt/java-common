@@ -52,7 +52,7 @@ public interface Bean {
 
     @Nonnull
     static <T> BeanWrapper<T> wrap(@Nonnull T instance) {
-        return wrap(instance);
+        return new BeanWrapper<T>(instance);
     }
 
 }

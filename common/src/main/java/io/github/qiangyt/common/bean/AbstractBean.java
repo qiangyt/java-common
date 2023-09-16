@@ -27,10 +27,14 @@ public abstract class AbstractBean<T extends Bean> implements Bean {
     @Nonnull
     final BeanInfo<T> beanInfo;
 
+    protected AbstractBean(@Nonnull Bean... dependsOn) {
+        this(null, dependsOn);
+    }
+
     @SuppressWarnings("unchecked")
     protected AbstractBean(String name, @Nonnull Bean... dependsOn) {
         if (name == null) {
-            name = ClassHelper.parseTitle(getClass());
+            name = ClassHelper.parseBeanName(getClass());
         }
         this.beanInfo = (BeanInfo<T>) Container.loadCurrent().registerBean(this, name, dependsOn);
     }

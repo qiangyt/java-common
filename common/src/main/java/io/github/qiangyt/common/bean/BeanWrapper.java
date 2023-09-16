@@ -26,9 +26,13 @@ public class BeanWrapper<T> implements Bean {
     @Nonnull
     final BeanInfo<BeanWrapper<T>> beanInfo;
 
+    public BeanWrapper(@Nonnull T instance) {
+        this(instance, null);
+    }
+
     public BeanWrapper(@Nonnull T instance, @Nonnull String name) {
         if (name == null) {
-            name = ClassHelper.parseTitle(getClass());
+            name = ClassHelper.parseBeanName(getClass());
         }
 
         this.beanInfo = (BeanInfo<BeanWrapper<T>>) Container.loadCurrent().tryToRegisterBean(this, name);
