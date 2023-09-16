@@ -95,9 +95,6 @@ public class Container {
                 throw new BadStateException("%s - bean already registered: name=%s, class=%s, instance=%s", getName(),
                         bi.getName(), inst.getClass(), inst);
             }
-
-            bi.dependsOn(this, dependsOn);
-            return (BeanInfo<T>) bi;
         } else {
             // name not registered
         }
@@ -112,9 +109,6 @@ public class Container {
                 throw new BadStateException("%s - bean already registered: name=%s, class=%s, instance=%s", getName(),
                         bi.getName(), inst.getClass(), inst);
             }
-
-            bi.dependsOn(this, dependsOn);
-            return (BeanInfo<T>) bi;
         } else {
             // class not registered
         }
