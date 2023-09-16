@@ -16,6 +16,8 @@
  */
 package io.github.qiangyt.common.bean;
 
+import org.slf4j.Logger;
+
 import jakarta.annotation.Nonnull;
 
 public interface SimpleBean {
@@ -24,7 +26,18 @@ public interface SimpleBean {
     <T extends SimpleBean> BeanInfo<T> getBeanInfo();
 
     @Nonnull
-    String getName();
+    default String getName() {
+        return getBeanInfo().getName();
+    }
+
+    @Nonnull
+    default Logger log() {
+        return getBeanInfo().log();
+    }
+
+    default boolean isInited() {
+        return getBeanInfo().isInited();
+    }
 
     default void init() throws Exception {
     }

@@ -56,6 +56,11 @@ public class BeanInfo<T extends SimpleBean> {
         this.log = LoggerFactory.getLogger(name);
     }
 
+    @Nonnull
+    public Logger log() {
+        return this.log;
+    }
+
     public synchronized boolean doesDependsOn(@Nonnull String name) {
         return this.dependsOn.containsKey(name);
     }
@@ -120,18 +125,18 @@ public class BeanInfo<T extends SimpleBean> {
         this.inited = true;
     }
 
-    synchronized boolean destroy(@Nonnull Logger log) {
+    synchronized boolean destroy() {
         if (isInited() == false) {
             return true;
         }
 
-        this.dependedBy.values().forEach(bi -> bi.destroy(log));
+        this.dependedBy.values().forEach(BeanInfo::destroy);
 
         try {
             getInstance().destroy();
             return true;
         } catch (Exception e) {
-            log.error("bean {} - failed to destroy", getName(), e);
+            log().error("bean {} - failed to destroy", getName(), e);
             return false;
         } finally {
             this.inited = false;

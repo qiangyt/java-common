@@ -197,7 +197,7 @@ public class SimpleContainer {
 
     public synchronized void destroy() {
         ensureNotLocked();
-        this.beansByName.values().forEach(bi -> bi.destroy(log()));
+        this.beansByName.values().forEach(BeanInfo::destroy);
         this.locked = true;
     }
 

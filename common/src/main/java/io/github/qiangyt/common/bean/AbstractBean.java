@@ -35,9 +35,4 @@ public abstract class AbstractBean<T extends SimpleBean> implements SimpleBean {
         this.beanInfo = (BeanInfo<T>) SimpleContainer.loadCurrent().registerBean(this, name, dependsOn);
     }
 
-    @Override
-    public String getName() {
-        return getBeanInfo().getName();
-    }
-
 }
