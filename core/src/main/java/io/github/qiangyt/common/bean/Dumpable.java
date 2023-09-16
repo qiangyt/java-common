@@ -47,8 +47,7 @@ public interface Dumpable {
         });
     }
 
-    @Nullable
-    static Map<String, Object> toMap(@Nullable Dumpable dumpable, Map<Object, Object> visited) {
+    static Map<String, Object> toMap(Dumpable dumpable, Map<Object, Object> visited) {
         if (dumpable == null) {
             return null;
         }
@@ -57,8 +56,8 @@ public interface Dumpable {
     }
 
     @SuppressWarnings("unchecked")
-    @Nullable
-    static List<Map<String, Object>> toMap(@Nullable List<? extends Dumpable> list, Map<Object, Object> visited) {
+
+    static List<Map<String, Object>> toMap(List<? extends Dumpable> list, Map<Object, Object> visited) {
         if (list == null) {
             return null;
         }
@@ -83,9 +82,8 @@ public interface Dumpable {
     }
 
     @SuppressWarnings("unchecked")
-    @Nullable
-    static Map<String, Map<String, Object>> toMap(@Nullable Map<String, ? extends Dumpable> map,
-            Map<Object, Object> visited) {
+
+    static Map<String, Map<String, Object>> toMap(Map<String, ? extends Dumpable> map, Map<Object, Object> visited) {
         if (map == null) {
             return null;
         }

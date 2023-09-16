@@ -19,6 +19,8 @@ package io.github.qiangyt.common.bean;
 import static java.util.Objects.requireNonNull;
 import java.util.Date;
 
+import javax.annotation.Nonnull;
+
 /**
  * 具有唯一性id标示的基类，主要用于实体类的VO。 所有property必须和@see qiangyt.common.entity.GenericEO一一对应，因为 EO和VO间的property copy机制依赖于这个规定。
  *
@@ -42,6 +44,7 @@ public class GenericBean implements Dumpable {
     Date createdAt;
 
     @Override
+    @Nonnull
     public String toString() {
         return requireNonNull(dumpAsYaml(null));
     }

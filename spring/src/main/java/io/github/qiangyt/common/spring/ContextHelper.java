@@ -17,7 +17,6 @@
 package io.github.qiangyt.common.spring;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -32,10 +31,8 @@ import io.github.qiangyt.common.err.BadStateException;
 @Component
 public class ContextHelper implements ApplicationContextAware {
 
-    @Nullable
     private static ApplicationContext context;
 
-    @Nullable
     public static <T> T getBean(@Nonnull Class<T> clazz) {
         return getContext().getBean(clazz);
     }
@@ -50,7 +47,6 @@ public class ContextHelper implements ApplicationContextAware {
         return r;
     }
 
-    @Nullable
     public static <T> T getBean(@Nonnull String name, @Nonnull Class<T> clazz) {
         return getContext().getBean(name, clazz);
     }

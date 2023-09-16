@@ -24,7 +24,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.regex.Pattern;
 
-import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
+import static java.util.Objects.requireNonNull;
+
 import io.github.qiangyt.common.err.BadStateException;
 
 import org.apache.commons.codec.DecoderException;
@@ -43,8 +45,7 @@ public class Codec {
     public static final Base64.Encoder BASE64_URL_ENCODER = Base64.getUrlEncoder().withoutPadding();
     public static final Base64.Decoder BASE64_URL_DECODER = Base64.getUrlDecoder();
 
-    @Nullable
-    public static byte[] decodeHex(@Nullable String hex) {
+    public static byte[] decodeHex(String hex) {
         if (hex == null) {
             return null;
         }
@@ -55,8 +56,7 @@ public class Codec {
         }
     }
 
-    @Nullable
-    public static String encodeHex(@Nullable byte[] bytes) {
+    public static String encodeHex(byte[] bytes) {
         if (bytes == null) {
             return null;
         }
@@ -94,14 +94,17 @@ public class Codec {
      *
      * @since 2.6
      */
-    public static boolean isValidBase64Url(@Nullable String base64) {
+    public static boolean isValidBase64Url(String base64) {
         return base64 != null && BASE64URL_PATTERN.matcher(base64).matches();
     }
 
     /**
      * long转换成字节数组
      */
-    static void longTobytes(long value, byte[] bytes, int offset) {
+    static void longTobytes(long value, @Nonnull byte[] bytes, int offset) {
+        if (bytes.length < offset + 8) {
+            throw new BadStateException("bytes length is too short: %s < %s", bytes.length, offset + 8);
+        }
         for (int i = 7; i > -1; i--) {
             bytes[offset++] = (byte) ((value >> 8 * i) & 0xFF);
         }
@@ -110,7 +113,11 @@ public class Codec {
     /**
      * 字节数组转换成long
      */
-    static long bytesTolong(byte[] bytes, int offset) {
+    static long bytesTolong(@Nonnull byte[] bytes, int offset) {
+        if (bytes.length < offset + 8) {
+            throw new BadStateException("bytes length is too short: %s < %s", bytes.length, offset + 8);
+        }
+
         long value = 0;
         for (int i = 7; i > -1; i--) {
             value |= (((long) bytes[offset++]) & 0xFF) << 8 * i;
@@ -128,7 +135,10 @@ public class Codec {
      * @param out
      *            {@link Writer} to write to. It will not be closed after use!
      */
-    public static void bytesToPem(byte[] encoded, KeyLabel label, Writer out) {
+    public static void bytesToPem(@Nonnull byte[] encoded, KeyLabel label, @Nonnull Writer out) {
+        requireNonNull(encoded);
+        requireNonNull(out);
+
         try {
             if (label != null) {
                 out.append(label.beginLine).append("\n");
@@ -142,7 +152,8 @@ public class Codec {
         }
     }
 
-    public static String bytesToPem(byte[] encoded, KeyLabel label) {
+    @SuppressWarnings("null")
+    public static @Nonnull String bytesToPem(@Nonnull byte[] encoded, KeyLabel label) {
         var w = new StringWriter(encoded.length * 2);
         bytesToPem(encoded, label, w);
         return w.toString();

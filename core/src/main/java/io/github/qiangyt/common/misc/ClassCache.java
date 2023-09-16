@@ -34,11 +34,13 @@ public class ClassCache {
     }
 
     @Nonnull
+    @SuppressWarnings("null")
     public ClassLoader getClassLoader() {
         return Thread.currentThread().getContextClassLoader();
     }
 
     @Nonnull
+    @SuppressWarnings("null")
     public Class<?> resolve(@Nonnull String className) {
         requireNonNull(className);
 

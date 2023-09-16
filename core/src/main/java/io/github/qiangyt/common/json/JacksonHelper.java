@@ -20,7 +20,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 
 import io.github.qiangyt.common.bean.Dumpable;
 
-import javax.annotation.Nullable;
 import javax.annotation.Nonnull;
 import static java.util.Objects.requireNonNull;
 
@@ -28,29 +27,24 @@ public class JacksonHelper {
 
     public static final Jackson JACKSON = Jackson.DEFAULT;
 
-    @Nullable
-    public static String pretty(@Nullable Object object) {
+    public static String pretty(Object object) {
         return JACKSON.pretty(object);
     }
 
-    @Nullable
-    public static String pretty(@Nullable Dumpable dumpable) {
+    public static String pretty(Dumpable dumpable) {
         return JACKSON.pretty(dumpable);
     }
 
-    @Nullable
-    public static String to(@Nullable Object object) {
+    public static String to(Object object) {
         return JACKSON.toString(object, false);
     }
 
-    @Nullable
-    public static <T> T from(@Nullable String json, @Nonnull Class<T> clazz) {
+    public static <T> T from(String json, @Nonnull Class<T> clazz) {
         requireNonNull(clazz);
         return JACKSON.from(json, clazz);
     }
 
-    @Nullable
-    public static <T> T from(@Nullable String json, @Nonnull TypeReference<T> typeReference) {
+    public static <T> T from(String json, @Nonnull TypeReference<T> typeReference) {
         requireNonNull(typeReference);
         return JACKSON.from(json, typeReference);
     }

@@ -17,9 +17,6 @@
 package io.github.qiangyt.common.json;
 
 import javax.annotation.Nonnull;
-
-import javax.annotation.Nullable;
-
 import static java.util.Objects.requireNonNull;
 
 import java.net.InetSocketAddress;
@@ -54,7 +51,6 @@ public class JsonAPIConfig implements Dumpable {
     @Nonnull
     private HttpClient.Redirect redirect = DEFAULT_REDIRECT;
 
-    @Nullable
     private InetSocketAddress proxy;
 
     public JsonAPIConfig(@Nonnull String endpointString) {

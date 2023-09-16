@@ -21,15 +21,14 @@ import com.google.common.collect.Lists;
 import java.util.Collection;
 import java.util.Objects;
 
-import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
 
 /**
  * 字符串操作的工具类
  */
 public class StringHelper {
 
-    @Nullable
-    public static String capitalize(@Nullable String t) {
+    public static String capitalize(String t) {
         if (t == null || t.isBlank()) {
             return t;
         }
@@ -37,8 +36,8 @@ public class StringHelper {
     }
 
     /** 数组的toString */
-    @Nullable
-    public static <T> String toString(@Nullable T[] array) {
+
+    public static <T> String toString(T[] array) {
         if (array == null) {
             return null;
         }
@@ -46,8 +45,8 @@ public class StringHelper {
     }
 
     /** boolean数组的toString */
-    @Nullable
-    public static String toString(@Nullable boolean[] array) {
+
+    public static String toString(boolean[] array) {
         if (array == null) {
             return null;
         }
@@ -62,7 +61,10 @@ public class StringHelper {
      * @param texts
      *            待连接的多个字符串
      */
-    public static <T> String join(String separator, Collection<T> texts) {
+    public static <T> String join(@Nonnull String separator, Collection<T> texts) {
+        if (texts == null) {
+            return null;
+        }
         return join(separator, texts.toArray(new String[texts.size()]));
     }
 
@@ -74,7 +76,11 @@ public class StringHelper {
      * @param array
      *            数组
      */
-    public static <T> String join(String separator, T[] array) {
+    public static <T> String join(@Nonnull String separator, T[] array) {
+        if (array == null) {
+            return null;
+        }
+
         var r = new StringBuilder(array.length * 64);
         var isFirst = true;
         for (var obj : array) {
@@ -91,14 +97,14 @@ public class StringHelper {
     /**
      * 是否是null或全是空白字符串
      */
-    public static boolean isBlank(@Nullable String str) {
+    public static boolean isBlank(String str) {
         return (str == null || str.length() == 0 || str.trim().length() == 0);
     }
 
     /**
      * 是否不会null而且不全是空白字符串
      */
-    public static boolean notBlank(@Nullable String str) {
+    public static boolean notBlank(String str) {
         return !isBlank(str);
     }
 

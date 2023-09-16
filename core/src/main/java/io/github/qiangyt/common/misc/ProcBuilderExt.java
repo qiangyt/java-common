@@ -42,7 +42,11 @@ public class ProcBuilderExt extends ProcBuilder {
     @Nonnull
     private final EnvExpander envExpander;
 
-    public static Pair<String, String[]> splitCommandAndArgs(String cmd) {
+    @SuppressWarnings("null")
+    @Nonnull
+    public static Pair<String, String[]> splitCommandAndArgs(@Nonnull String cmd) {
+        requireNonNull(cmd);
+
         var cmdAndArgs = cmd.split(" ");
         return Pair.of(cmdAndArgs[0], Arrays.copyOfRange(cmdAndArgs, 1, cmdAndArgs.length));
     }
@@ -51,11 +55,11 @@ public class ProcBuilderExt extends ProcBuilder {
         this(envExpander, splitCommandAndArgs(command));
     }
 
-    public ProcBuilderExt(@Nonnull EnvExpander envExpander, Pair<String, String[]> cmdAndArgs) {
-        this(envExpander, requireNonNull(cmdAndArgs.getLeft()), cmdAndArgs.getRight());
+    public ProcBuilderExt(@Nonnull EnvExpander envExpander, @Nonnull Pair<String, String[]> cmdAndArgs) {
+        this(envExpander, requireNonNull(cmdAndArgs.getLeft()), requireNonNull(cmdAndArgs.getRight()));
     }
 
-    public ProcBuilderExt(@Nonnull EnvExpander envExpander, @Nonnull String command, String[] args) {
+    public ProcBuilderExt(@Nonnull EnvExpander envExpander, @Nonnull String command, @Nonnull String[] args) {
         super(envExpander.expand(command), envExpander.expand(requireNonNull(args)));
 
         this.envExpander = envExpander;

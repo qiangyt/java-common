@@ -21,7 +21,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import io.github.qiangyt.common.err.BadStateException;
 
@@ -47,7 +46,7 @@ public class SimpleContainer {
     }
 
     @SuppressWarnings("unchecked")
-    @Nullable
+
     public <T extends SimpleBean> T getBean(@Nonnull Class<T> clazz) {
         T r = (T) this.beansByClass.get(clazz);
         if (r == null) {
@@ -60,7 +59,7 @@ public class SimpleContainer {
     }
 
     @SuppressWarnings("unchecked")
-    @Nullable
+
     public <T extends SimpleBean> T getBean(@Nonnull String name) {
         return (T) this.beansByName.get(name);
     }

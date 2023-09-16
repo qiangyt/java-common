@@ -31,19 +31,21 @@ import lombok.Getter;
 @Getter
 public class EnvExpander {
 
+    @Nonnull
     private StringSubstitutor substitutor;
 
+    @Nonnull
     private final Map<String, String> envVars;
 
     public EnvExpander() {
         this(true, true, null);
     }
 
-    public EnvExpander(Map<String, String> extra) {
+    public EnvExpander(@Nonnull Map<String, String> extra) {
         this(true, true, extra);
     }
 
-    public EnvExpander(EnvExpander parent) {
+    public EnvExpander(@Nonnull EnvExpander parent) {
         this(false, false, parent.envVars);
     }
 
@@ -64,6 +66,7 @@ public class EnvExpander {
         this.substitutor = new StringSubstitutor(this.envVars);
     }
 
+    @Nonnull
     public EnvExpander set(@Nonnull String var, String value) {
         this.envVars.put(var, value);
         this.substitutor = new StringSubstitutor(this.envVars);
@@ -71,6 +74,7 @@ public class EnvExpander {
         return this;
     }
 
+    @Nonnull
     public EnvExpander set(@Nonnull Map<String, String> vars) {
         this.envVars.putAll(vars);
         this.substitutor = new StringSubstitutor(this.envVars);

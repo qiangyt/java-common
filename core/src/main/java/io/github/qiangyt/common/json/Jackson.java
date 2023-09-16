@@ -18,7 +18,6 @@ package io.github.qiangyt.common.json;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.Date;
 
 import javax.annotation.concurrent.ThreadSafe;
 
@@ -28,14 +27,18 @@ import com.fasterxml.jackson.core.util.ByteArrayBuilder;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import io.github.qiangyt.common.bean.Dumpable;
 import io.github.qiangyt.common.err.BadStateException;
+import io.github.qiangyt.common.json.modules.DateModule;
+import io.github.qiangyt.common.json.modules.InetAddressModule;
+import io.github.qiangyt.common.json.modules.InstantModule;
+import io.github.qiangyt.common.json.modules.ProcResultModule;
+import io.github.qiangyt.common.json.modules.UriModule;
+import io.github.qiangyt.common.json.modules.UrlModule;
 import io.github.qiangyt.common.misc.StringHelper;
 import lombok.Getter;
-import javax.annotation.Nullable;
 import javax.annotation.Nonnull;
 import static java.util.Objects.requireNonNull;
 
@@ -45,7 +48,6 @@ public class Jackson {
 
     public static final Jackson DEFAULT = new Jackson(buildDefaultMapper());
 
-    @Nonnull
     public final ObjectMapper mapper;
 
     public Jackson(@Nonnull ObjectMapper mapper) {
@@ -62,11 +64,13 @@ public class Jackson {
     public static void initDefaultMapper(@Nonnull ObjectMapper mapper) {
         requireNonNull(mapper);
 
-        var dateModule = new SimpleModule();
-        dateModule.addSerializer(Date.class, new DateSerializer());
-        dateModule.addDeserializer(Date.class, new DateDeserialize());
-        mapper.registerModule(dateModule);
+        mapper.registerModule(DateModule.build());
         mapper.registerModule(new JavaTimeModule());
+        mapper.registerModule(InstantModule.build());
+        mapper.registerModule(ProcResultModule.build());
+        mapper.registerModule(UriModule.build());
+        mapper.registerModule(UrlModule.build());
+        mapper.registerModule(InetAddressModule.build());
 
         mapper.setSerializationInclusion(Include.NON_NULL);
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -75,10 +79,12 @@ public class Jackson {
         mapper.configure(DeserializationFeature.FAIL_ON_NUMBERS_FOR_ENUMS, true);
     }
 
-    @Nullable
-    public <T> T from(@Nullable String text, @Nonnull Class<T> clazz) {
-        requireNonNull(clazz);
+    public void registerModule(@Nonnull com.fasterxml.jackson.databind.Module module) {
+        requireNonNull(module);
+        getMapper().registerModule(module);
+    }
 
+    public <T> T from(String text, @Nonnull Class<T> clazz) {
         if (StringHelper.isBlank(text)) {
             return null;
         }
@@ -90,10 +96,7 @@ public class Jackson {
         }
     }
 
-    @Nullable
-    public <T> T from(@Nullable ByteBuffer buf, @Nonnull Class<T> clazz) {
-        requireNonNull(clazz);
-
+    public <T> T from(ByteBuffer buf, @Nonnull Class<T> clazz) {
         if (buf == null) {
             return null;
         }
@@ -112,10 +115,7 @@ public class Jackson {
         }
     }
 
-    @Nullable
-    public <T> T from(@Nullable byte[] bytes, @Nonnull Class<T> clazz) {
-        requireNonNull(clazz);
-
+    public <T> T from(byte[] bytes, @Nonnull Class<T> clazz) {
         if (bytes == null) {
             return null;
         }
@@ -127,10 +127,7 @@ public class Jackson {
         }
     }
 
-    @Nullable
-    public <T> T from(@Nullable String text, @Nonnull TypeReference<T> typeReference) {
-        requireNonNull(typeReference);
-
+    public <T> T from(String text, @Nonnull TypeReference<T> typeReference) {
         if (StringHelper.isBlank(text)) {
             return null;
         }
@@ -142,10 +139,7 @@ public class Jackson {
         }
     }
 
-    @Nullable
-    public <T> T from(@Nullable ByteBuffer buf, @Nonnull TypeReference<T> typeReference) {
-        requireNonNull(typeReference);
-
+    public <T> T from(ByteBuffer buf, @Nonnull TypeReference<T> typeReference) {
         if (buf == null) {
             return null;
         }
@@ -164,10 +158,7 @@ public class Jackson {
         }
     }
 
-    @Nullable
-    public <T> T from(@Nullable byte[] bytes, @Nonnull TypeReference<T> typeReference) {
-        requireNonNull(typeReference);
-
+    public <T> T from(byte[] bytes, @Nonnull TypeReference<T> typeReference) {
         if (bytes == null) {
             return null;
         }
@@ -179,33 +170,27 @@ public class Jackson {
         }
     }
 
-    @Nullable
-    public String pretty(@Nullable Object object) {
+    public String pretty(Object object) {
         return toString(object, true);
     }
 
-    @Nullable
-    public String pretty(@Nullable Dumpable dumpable) {
+    public String pretty(Dumpable dumpable) {
         return pretty(Dumpable.toMap(dumpable, null));
     }
 
-    @Nullable
-    public String toString(@Nullable Object object) {
+    public String toString(Object object) {
         return toString(object, false);
     }
 
-    @Nullable
-    public byte[] toBytes(@Nullable Object object) {
+    public byte[] toBytes(Object object) {
         return toBytes(object, false);
     }
 
-    @Nullable
-    public ByteBuffer toByteBuffer(@Nullable Object object) {
+    public ByteBuffer toByteBuffer(Object object) {
         return toByteBuffer(object, false);
     }
 
-    @Nullable
-    public String toString(@Nullable Object object, boolean pretty) {
+    public String toString(Object object, boolean pretty) {
         if (object == null) {
             return null;
         }
@@ -220,16 +205,14 @@ public class Jackson {
         }
     }
 
-    @Nullable
-    public byte[] toBytes(@Nullable Object object, boolean pretty) {
+    public byte[] toBytes(Object object, boolean pretty) {
         if (object == null) {
             return null;
         }
         return toByteBuffer(object, pretty).array();
     }
 
-    @Nullable
-    public ByteBuffer toByteBuffer(@Nullable Object object, boolean pretty) {
+    public ByteBuffer toByteBuffer(Object object, boolean pretty) {
         if (object == null) {
             return null;
         }

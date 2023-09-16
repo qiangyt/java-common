@@ -17,6 +17,8 @@
 package io.github.qiangyt.common.misc;
 
 import java.util.UUID;
+import static java.util.Objects.requireNonNull;
+import javax.annotation.Nonnull;
 
 /**
  * UUID工具
@@ -28,6 +30,8 @@ public class UuidHelper {
      *
      * @return
      */
+    @Nonnull
+    @SuppressWarnings("null")
     public static String shortUuid() {
         var uuid = UUID.randomUUID();
         return compress(uuid);
@@ -37,6 +41,10 @@ public class UuidHelper {
      * 把UUID对象压缩成短UUID字符串
      */
     public static String compress(UUID uuid) {
+        if (uuid == null) {
+            return null;
+        }
+
         byte[] byUuid = new byte[16];
         long least = uuid.getLeastSignificantBits();
         long most = uuid.getMostSignificantBits();
@@ -49,10 +57,17 @@ public class UuidHelper {
      * 把短UUID字符串解压缩UUID对象
      */
     public static UUID uncompress(String compressedUuid) {
+        if (compressedUuid == null) {
+            return null;
+        }
+
         if (compressedUuid.length() != 22) {
             throw new IllegalArgumentException("Invalid uuid!");
         }
+
         byte[] byUuid = Codec.base64ToBytes(compressedUuid);
+        requireNonNull(byUuid);
+
         long most = Codec.bytesTolong(byUuid, 0);
         long least = Codec.bytesTolong(byUuid, 8);
         return new UUID(most, least);

@@ -17,7 +17,6 @@
 package io.github.qiangyt.common.misc;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public class Holder<T> {
 
@@ -27,19 +26,19 @@ public class Holder<T> {
         this(null);
     }
 
-    public Holder(@Nullable T value) {
+    public Holder(T value) {
         this.value = value;
     }
 
-    public static @Nonnull <T> Holder<T> of(@Nullable T value) {
+    public static @Nonnull <T> Holder<T> of(T value) {
         return new Holder<>(value);
     }
 
-    public void set(@Nullable T value) {
+    public void set(T value) {
         this.value = value;
     }
 
-    public @Nullable T get() {
+    public T get() {
         return this.value;
     }
 

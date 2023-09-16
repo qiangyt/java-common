@@ -17,7 +17,6 @@
 package io.github.qiangyt.common.json;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import static java.util.Objects.requireNonNull;
@@ -54,7 +53,6 @@ public class JsonAPI implements Dumpable {
     @Nonnull
     final HttpClient.Builder client;
 
-    @Nullable
     HttpResponse<String> response;
 
     @Nonnull
@@ -128,17 +126,15 @@ public class JsonAPI implements Dumpable {
         return r;
     }
 
-    @Nullable
-    public <T> T GET(@Nullable Object requestBody, @Nonnull Class<T> responseBodyClass) {
+    public <T> T GET(Object requestBody, @Nonnull Class<T> responseBodyClass) {
         return execute("GET", requestBody, responseBodyClass);
     }
 
     @Nonnull
-    public <T> T GET(@Nullable Object requestBody, @Nonnull TypeReference<T> responseTypeReference) {
+    public <T> T GET(Object requestBody, @Nonnull TypeReference<T> responseTypeReference) {
         return execute("GET", requestBody, responseTypeReference);
     }
 
-    @Nullable
     public <T> T GET(@Nonnull Class<T> responseBodyClass) {
         return GET(null, responseBodyClass);
     }
@@ -148,13 +144,12 @@ public class JsonAPI implements Dumpable {
         return GET(null, responseTypeReference);
     }
 
-    @Nullable
-    public <T> T PATCH(@Nullable Object requestBody, @Nonnull Class<T> responseBodyClass) {
+    public <T> T PATCH(Object requestBody, @Nonnull Class<T> responseBodyClass) {
         return execute("PATCH", requestBody, responseBodyClass);
     }
 
     @Nonnull
-    public <T> T PATCH(@Nullable Object requestBody, @Nonnull TypeReference<T> responseTypeReference) {
+    public <T> T PATCH(Object requestBody, @Nonnull TypeReference<T> responseTypeReference) {
         return execute("PATCH", requestBody, responseTypeReference);
     }
 
@@ -163,22 +158,19 @@ public class JsonAPI implements Dumpable {
         return PATCH(null, responseTypeReference);
     }
 
-    @Nullable
     public <T> T PATCH(@Nonnull Class<T> responseBodyClass) {
         return PATCH(null, responseBodyClass);
     }
 
-    @Nullable
-    public <T> T PUT(@Nullable Object requestBody, @Nonnull Class<T> responseBodyClass) {
+    public <T> T PUT(Object requestBody, @Nonnull Class<T> responseBodyClass) {
         return execute("PUT", requestBody, responseBodyClass);
     }
 
     @Nonnull
-    public <T> T PUT(@Nullable Object requestBody, @Nonnull TypeReference<T> responseTypeReference) {
+    public <T> T PUT(Object requestBody, @Nonnull TypeReference<T> responseTypeReference) {
         return execute("PUT", requestBody, responseTypeReference);
     }
 
-    @Nullable
     public <T> T PUT(@Nonnull Class<T> responseBodyClass) {
         return PUT(null, responseBodyClass);
     }
@@ -188,17 +180,15 @@ public class JsonAPI implements Dumpable {
         return PUT(null, responseTypeReference);
     }
 
-    @Nullable
-    public <T> T POST(@Nullable Object requestBody, @Nonnull Class<T> responseBodyClass) {
+    public <T> T POST(Object requestBody, @Nonnull Class<T> responseBodyClass) {
         return execute("POST", requestBody, responseBodyClass);
     }
 
     @Nonnull
-    public <T> T POST(@Nullable Object requestBody, @Nonnull TypeReference<T> responseTypeReference) {
+    public <T> T POST(Object requestBody, @Nonnull TypeReference<T> responseTypeReference) {
         return execute("POST", requestBody, responseTypeReference);
     }
 
-    @Nullable
     public <T> T POST(@Nonnull Class<T> responseBodyClass) {
         return POST(null, responseBodyClass);
     }
@@ -208,17 +198,15 @@ public class JsonAPI implements Dumpable {
         return POST(null, responseTypeReference);
     }
 
-    @Nullable
-    public <T> T DELETE(@Nullable Object requestBody, @Nonnull Class<T> responseBodyClass) {
+    public <T> T DELETE(Object requestBody, @Nonnull Class<T> responseBodyClass) {
         return execute("DELETE", requestBody, responseBodyClass);
     }
 
     @Nonnull
-    public <T> T DELETE(@Nullable Object requestBody, @Nonnull TypeReference<T> responseTypeReference) {
+    public <T> T DELETE(Object requestBody, @Nonnull TypeReference<T> responseTypeReference) {
         return execute("DELETE", requestBody, responseTypeReference);
     }
 
-    @Nullable
     public <T> T DELETE(@Nonnull Class<T> responseBodyClass) {
         return DELETE(null, responseBodyClass);
     }
@@ -228,8 +216,7 @@ public class JsonAPI implements Dumpable {
         return DELETE(null, responseTypeReference);
     }
 
-    @Nullable
-    protected <T> T execute(@Nonnull String method, @Nullable Object requestBody, @Nonnull Class<T> responseBodyClass) {
+    protected <T> T execute(@Nonnull String method, Object requestBody, @Nonnull Class<T> responseBodyClass) {
         var resp = doExecute(method, requestBody);
 
         var respBodyJson = resp.body();
@@ -237,7 +224,7 @@ public class JsonAPI implements Dumpable {
     }
 
     @Nonnull
-    protected <T> T execute(@Nonnull String method, @Nullable Object requestBody,
+    protected <T> T execute(@Nonnull String method, Object requestBody,
             @Nonnull TypeReference<T> responseTypeReference) {
         var resp = doExecute(method, requestBody);
 
@@ -247,7 +234,7 @@ public class JsonAPI implements Dumpable {
     }
 
     @Nonnull
-    protected HttpResponse<String> doExecute(@Nonnull String method, @Nullable Object requestBody) {
+    protected HttpResponse<String> doExecute(@Nonnull String method, Object requestBody) {
         requireNonNull(method);
 
         String reqBodyJson;

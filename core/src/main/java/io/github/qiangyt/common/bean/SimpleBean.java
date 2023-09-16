@@ -16,8 +16,11 @@
  */
 package io.github.qiangyt.common.bean;
 
+import javax.annotation.Nonnull;
+
 public interface SimpleBean {
 
+    @Nonnull
     BeanInfo<?> getBeanInfo();
 
     default void init() throws Exception {

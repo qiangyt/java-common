@@ -16,12 +16,16 @@
  */
 package io.github.qiangyt.common.misc;
 
+import javax.annotation.Nonnull;
+
 /**
  *
  */
 public class ClassHelper {
 
-    public static String parseNameSuffix(Class<?> clazz) {
+    @SuppressWarnings("null")
+    @Nonnull
+    public static String parseTitle(@Nonnull Class<?> clazz) {
         var n = clazz.getSimpleName();
         int pos = n.lastIndexOf('.');
         if (pos < 0) {

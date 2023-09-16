@@ -16,35 +16,40 @@
  */
 package io.github.qiangyt.common.bean;
 
+import javax.annotation.Nonnull;
+
 import org.slf4j.Logger;
 
 import io.github.qiangyt.common.misc.ClassHelper;
 
 public abstract class AbstractBean implements SimpleBean {
 
+    @Nonnull
     final BeanInfo<AbstractBean> beanInfo;
 
-    protected AbstractBean(SimpleBean... dependentBeans) {
+    protected AbstractBean(@Nonnull SimpleBean... dependentBeans) {
         this(null, dependentBeans);
     }
 
-    protected AbstractBean(String name, SimpleBean... dependentBeans) {
+    protected AbstractBean(String name, @Nonnull SimpleBean... dependentBeans) {
         if (name == null) {
-            name = ClassHelper.parseNameSuffix(getClass());
+            name = ClassHelper.parseTitle(getClass());
         }
 
         this.beanInfo = new BeanInfo<>(this, name, dependentBeans);
     }
 
-    public void addDependencies(SimpleBean... dependentBeans) {
+    public void addDependencies(@Nonnull SimpleBean... dependentBeans) {
         getBeanInfo().addDependencies(dependentBeans);
     }
 
     @Override
+    @Nonnull
     public BeanInfo<AbstractBean> getBeanInfo() {
         return this.beanInfo;
     }
 
+    @Nonnull
     public Logger log() {
         return getBeanInfo().getLog();
     }

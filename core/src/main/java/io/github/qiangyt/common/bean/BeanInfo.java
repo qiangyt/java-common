@@ -43,7 +43,8 @@ public class BeanInfo<T extends SimpleBean> {
     @Nonnull
     LinkedHashMap<String, BeanInfo<?>> dependencies = new LinkedHashMap<>();
 
-    public BeanInfo(@Nonnull T instance, @Nonnull String name, SimpleBean... dependentBeans) {
+    @SuppressWarnings("null")
+    public BeanInfo(@Nonnull T instance, @Nonnull String name, @Nonnull SimpleBean... dependentBeans) {
         this.instance = requireNonNull(instance);
         this.name = requireNonNull(name);
         this.inited = false;
@@ -52,7 +53,7 @@ public class BeanInfo<T extends SimpleBean> {
         addDependencies(dependentBeans);
     }
 
-    public synchronized void addDependencies(SimpleBean... dependentBeans) {
+    public synchronized void addDependencies(@Nonnull SimpleBean... dependentBeans) {
         ensureNotInited();
 
         var deps = new LinkedHashMap<String, BeanInfo<?>>(this.dependencies);
