@@ -20,86 +20,185 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import jakarta.annotation.Nonnull;
-
+import lombok.AccessLevel;
+import lombok.Getter;
 import io.github.qiangyt.common.err.BadStateException;
+import io.github.qiangyt.common.misc.ClassHelper;
 
+@Getter
 public class SimpleContainer {
 
-    final Map<Class<?>, SimpleBean> beansByClass = new HashMap<>();
+    private static final ThreadLocal<SimpleContainer> CURRENT = new ThreadLocal<>();
 
-    final LinkedHashMap<String, SimpleBean> beansByName = new LinkedHashMap<>();
+    @Getter(AccessLevel.NONE)
+    final Logger log;
 
-    public synchronized void registerBean(@Nonnull SimpleBean bean) {
-        String name = bean.getBeanInfo().getName();
-        if (this.beansByName.containsKey(name)) {
-            throw new BadStateException("bean already registered: name=%s", name);
+    @Nonnull
+    final SimpleContainerBuilder builder;
+
+    @Nonnull
+    final String name;
+
+    @Getter(AccessLevel.NONE)
+    final Map<Class<?>, BeanInfo<?>> beansByClass = new HashMap<>();
+
+    @Getter(AccessLevel.NONE)
+    final LinkedHashMap<String, BeanInfo<?>> beansByName = new LinkedHashMap<>();
+
+    volatile boolean locked;
+
+    public SimpleContainer(@Nonnull String name, @Nonnull SimpleContainerBuilder builder) {
+        this.log = LoggerFactory.getLogger(name + "@" + ClassHelper.parseTitle(getClass()));
+        this.locked = false;
+        this.name = name;
+        this.builder = builder;
+    }
+
+    @Nonnull
+    public Logger log() {
+        return this.log;
+    }
+
+    public synchronized void ensureNotLocked() {
+        if (isLocked()) {
+            throw new BadStateException("%s - container is locked", getName());
         }
-
-        Class<?> clazz = bean.getClass();
-        if (this.beansByClass.containsKey(clazz)) {
-            throw new BadStateException("bean already registered: class=%s", clazz);
-        }
-
-        this.beansByName.put(name, bean);
-        this.beansByClass.put(clazz, bean);
     }
 
     @SuppressWarnings("unchecked")
+    public static <T extends SimpleContainer> T getCurrent() {
+        return (T) CURRENT.get();
+    }
+
+    @Nonnull
+    public static <T extends SimpleContainer> T loadCurrent() {
+        T r = getCurrent();
+        if (r == null) {
+            throw new BadStateException("no active container");
+        }
+        return r;
+    }
+
+    public synchronized <T extends SimpleBean> BeanInfo<T> registerBean(@Nonnull T instance, @Nonnull String beanName,
+            @Nonnull SimpleBean... dependsOn) {
+        ensureNotLocked();
+
+        if (this.beansByName.containsKey(beanName)) {
+            throw new BadStateException("%s - bean already registered: name=%s", getName(), beanName);
+        }
+
+        Class<?> clazz = instance.getClass();
+        if (this.beansByClass.containsKey(clazz)) {
+            throw new BadStateException("%s - bean already registered: class=%s", getName(), clazz);
+        }
+
+        var r = new BeanInfo<T>(instance, beanName, dependsOn);
+
+        this.beansByName.put(beanName, r);
+        this.beansByClass.put(clazz, r);
+
+        r.dependsOn(this, dependsOn);
+
+        return r;
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T extends SimpleBean> BeanInfo<T> getBeanInfo(@Nonnull Class<T> clazz) {
+        return (BeanInfo<T>) this.beansByClass.get(clazz);
+    }
+
+    public <T extends SimpleBean> BeanInfo<T> loadBeanInfo(@Nonnull Class<T> clazz) {
+        BeanInfo<T> r = getBeanInfo(clazz);
+        if (r == null) {
+            throw new BadStateException("%s - bean not found: class=%s", getName(), clazz);
+        }
+        return r;
+    }
 
     public <T extends SimpleBean> T getBean(@Nonnull Class<T> clazz) {
-        T r = (T) this.beansByClass.get(clazz);
-        if (r == null) {
+        var bi = getBeanInfo(clazz);
+        if (bi == null) {
             return null;
         }
+
+        var r = bi.getInstance();
         if (r.getClass() != clazz) {
-            throw new BadStateException("bean class mismatch: expected=%s, actual=%s", clazz, r.getClass());
+            throw new BadStateException("%s - bean class mismatch: expected=%s, actual=%s", getName(), clazz,
+                    r.getClass());
         }
         return r;
     }
 
     @SuppressWarnings("unchecked")
+    public <T extends SimpleBean> BeanInfo<T> getBeanInfo(@Nonnull String beanName) {
+        return (BeanInfo<T>) this.beansByName.get(beanName);
+    }
 
-    public <T extends SimpleBean> T getBean(@Nonnull String name) {
-        return (T) this.beansByName.get(name);
+    public <T extends SimpleBean> BeanInfo<T> loadBeanInfo(@Nonnull String beanName) {
+        BeanInfo<T> r = getBeanInfo(beanName);
+        if (r == null) {
+            throw new BadStateException("%s - bean not found: name=%s", getName(), beanName);
+        }
+        return r;
+    }
+
+    public <T extends SimpleBean> T getBean(@Nonnull String beanName) {
+        BeanInfo<T> bi = getBeanInfo(beanName);
+        if (bi == null) {
+            return null;
+        }
+        return bi.getInstance();
     }
 
     @Nonnull
     public <T extends SimpleBean> T loadBean(@Nonnull Class<T> clazz) {
         T r = getBean(clazz);
         if (r == null) {
-            throw new BadStateException("bean not found: class=%s", clazz);
+            throw new BadStateException("%s - bean not found: class=%s", getName(), clazz);
         }
         return r;
     }
 
     @Nonnull
-    public <T extends SimpleBean> T loadBean(@Nonnull String name) {
-        T r = getBean(name);
+    public <T extends SimpleBean> T loadBean(@Nonnull String beanName) {
+        T r = getBean(beanName);
         if (r == null) {
-            throw new BadStateException("bean not found: name=%s", name);
+            throw new BadStateException("%s - bean not found: name=%s", getName(), beanName);
         }
         return r;
     }
 
-    public void refresh() {
-        for (var bean : this.beansByName.values()) {
-            var beanInfo = bean.getBeanInfo();
-            if (beanInfo.isInited()) {
-                continue;
-            }
+    public synchronized void build() {
+        ensureNotLocked();
 
-            var deps = beanInfo.getDependencies();
-            if (deps.isEmpty() == false) {
-                for (var dep : deps.values()) {
-                    if (dep.isInited() == false) {
-                        dep.init();
-                    }
-                }
-            }
-
-            beanInfo.init();
+        if (CURRENT.get() != null) {
+            throw new BadStateException("%s - wrong container build status", getName());
         }
+
+        try {
+            CURRENT.set(this);
+            getBuilder().build();
+        } catch (Exception ex) {
+            throw new BadStateException(ex, "%s - failed to build container", getName());
+        } finally {
+            CURRENT.remove();
+        }
+    }
+
+    public synchronized void refresh() {
+        ensureNotLocked();
+        this.beansByName.values().forEach(BeanInfo::init);
+        this.locked = true;
+    }
+
+    public synchronized void destroy() {
+        ensureNotLocked();
+        this.beansByName.values().forEach(bi -> bi.destroy(log()));
+        this.locked = true;
     }
 
 }

@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import io.github.qiangyt.common.err.BadStateException;
 import jakarta.annotation.Nonnull;
+import lombok.AccessLevel;
 import lombok.Getter;
 import static java.util.Objects.requireNonNull;
 
@@ -41,58 +42,69 @@ public class BeanInfo<T extends SimpleBean> {
     final Logger log;
 
     @Nonnull
-    LinkedHashMap<String, BeanInfo<?>> dependencies = new LinkedHashMap<>();
+    @Getter(AccessLevel.NONE)
+    LinkedHashMap<String, BeanInfo<?>> dependsOn = new LinkedHashMap<>();
 
-    @SuppressWarnings("null")
-    public BeanInfo(@Nonnull T instance, @Nonnull String name, @Nonnull SimpleBean... dependentBeans) {
+    @Nonnull
+    @Getter(AccessLevel.NONE)
+    LinkedHashMap<String, BeanInfo<?>> dependedBy = new LinkedHashMap<>();
+
+    public BeanInfo(@Nonnull T instance, @Nonnull String name, @Nonnull SimpleBean... dependsOn) {
         this.instance = requireNonNull(instance);
         this.name = requireNonNull(name);
         this.inited = false;
         this.log = LoggerFactory.getLogger(name);
-
-        addDependencies(dependentBeans);
     }
 
-    public synchronized void addDependencies(@Nonnull SimpleBean... dependentBeans) {
-        ensureNotInited();
-
-        var deps = new LinkedHashMap<String, BeanInfo<?>>(this.dependencies);
-
-        for (var depBean : dependentBeans) {
-            requireNonNull(depBean);
-
-            var depInfo = depBean.getBeanInfo();
-            var depName = depInfo.getName();
-
-            if (deps.containsKey(depName)) {
-                throw new BadStateException("bean %s - found duplicated dependent bean: %s", getName(), depName);
-            }
-            deps.put(depName, depInfo);
-        }
-
-        this.dependencies = deps;
+    public synchronized boolean doesDependsOn(@Nonnull String name) {
+        return this.dependsOn.containsKey(name);
     }
 
-    public void ensureAlreadyInited() {
-        if (!isInited()) {
-            throw new BadStateException("bean %s - not yet inited", getName());
-        }
+    public synchronized boolean isDependedBy(@Nonnull String name) {
+        return this.dependedBy.containsKey(name);
     }
 
-    public void ensureNotInited() {
+    public synchronized void ensureNotInited() {
         if (isInited()) {
             throw new BadStateException("bean %s - already inited", getName());
         }
     }
 
-    public void ensureDependenciesAlreadyInited() {
-        this.dependencies.values().forEach(BeanInfo::ensureAlreadyInited);
-    }
-
-    public void init() {
+    synchronized void dependsOn(@Nonnull SimpleContainer container, @Nonnull SimpleBean... depends) {
         ensureNotInited();
 
-        ensureDependenciesAlreadyInited();
+        var _dependsOn = new LinkedHashMap<String, BeanInfo<?>>(this.dependsOn);
+        var myName = getName();
+
+        for (var depBean : depends) {
+            requireNonNull(depBean);
+
+            var depName = depBean.getName();
+            var depInfo = container.loadBeanInfo(depName);
+
+            if (_dependsOn.containsKey(depName)) {
+                throw new BadStateException("bean %s - found duplicated depending bean: %s", myName, depName);
+            }
+            if (depInfo.doesDependsOn(myName)) {
+                throw new BadStateException("bean %s - found cyclic depending bean: %s", myName, depName);
+            }
+
+            synchronized (depInfo) {
+                depInfo.dependedBy.put(myName, this);
+            }
+
+            _dependsOn.put(depName, depInfo);
+        }
+
+        this.dependsOn = _dependsOn;
+    }
+
+    synchronized void init() {
+        if (isInited()) {
+            return;
+        }
+
+        this.dependsOn.values().forEach(BeanInfo::init);
 
         try {
             getInstance().init();
@@ -100,20 +112,26 @@ public class BeanInfo<T extends SimpleBean> {
             throw new BadStateException(e, "bean %s - failed to init", getName());
         }
 
-        inited = true;
+        this.inited = true;
     }
 
-    public void destroy() {
+    synchronized boolean destroy(@Nonnull Logger log) {
         if (isInited() == false) {
-            return;
+            return true;
         }
+
+        this.dependedBy.values().forEach(bi -> bi.destroy(log));
 
         try {
             getInstance().destroy();
+            return true;
         } catch (Exception e) {
-            throw new BadStateException(e, "bean %s - failed to destroy", getName());
+            log.error("bean {} - failed to destroy", getName(), e);
+            return false;
+        } finally {
+            this.inited = false;
         }
-        inited = false;
+
     }
 
 }

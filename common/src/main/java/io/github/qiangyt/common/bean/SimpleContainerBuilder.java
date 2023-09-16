@@ -16,28 +16,9 @@
  */
 package io.github.qiangyt.common.bean;
 
-import jakarta.annotation.Nonnull;
-import lombok.Getter;
+@FunctionalInterface
+public interface SimpleContainerBuilder {
 
-import io.github.qiangyt.common.misc.ClassHelper;
-
-public abstract class AbstractBean<T extends SimpleBean> implements SimpleBean {
-
-    @Getter
-    @Nonnull
-    final BeanInfo<T> beanInfo;
-
-    @SuppressWarnings("unchecked")
-    protected AbstractBean(String name, @Nonnull SimpleBean... dependsOn) {
-        if (name == null) {
-            name = ClassHelper.parseTitle(getClass());
-        }
-        this.beanInfo = (BeanInfo<T>) SimpleContainer.loadCurrent().registerBean(this, name, dependsOn);
-    }
-
-    @Override
-    public String getName() {
-        return getBeanInfo().getName();
-    }
+    void build() throws Exception;
 
 }

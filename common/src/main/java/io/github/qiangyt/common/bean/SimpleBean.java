@@ -21,7 +21,10 @@ import jakarta.annotation.Nonnull;
 public interface SimpleBean {
 
     @Nonnull
-    BeanInfo<?> getBeanInfo();
+    <T extends SimpleBean> BeanInfo<T> getBeanInfo();
+
+    @Nonnull
+    String getName();
 
     default void init() throws Exception {
     }
