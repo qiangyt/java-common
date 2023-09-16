@@ -4,27 +4,18 @@
 
     <parent>
         <groupId>io.github.qiangyt</groupId>
-        <artifactId>qiangyt-common-dependencies-spring</artifactId>
+        <artifactId>qiangyt-common-dependencies</artifactId>
         <version>1.0.0-SNAPSHOT</version>
-        <relativePath>../dependencies-spring</relativePath>
+        <relativePath>../dependencies</relativePath>
     </parent>
 
     <groupId>io.github.qiangyt</groupId>
-    <artifactId>qiangyt-common-spring</artifactId>
+    <artifactId>qiangyt-common</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
     <description>Common library by Yiting Qiang</description>
     <url>https://github.com/qiangyt/java-common</url>
-
-    <dependencies>
-        <dependency>
-            <groupId>io.github.qiangyt</groupId>
-            <artifactId>qiangyt-common</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-        </dependency>
-
-    </dependencies>
 
 </project>

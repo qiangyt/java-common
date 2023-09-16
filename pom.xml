@@ -12,7 +12,7 @@
     
     <modules>
         <module>dependencies</module>
-        <module>core</module>
+        <module>common</module>
         <module>bom</module>
         <module>dependencies-spring</module>
         <module>spring</module>
