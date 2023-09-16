@@ -79,7 +79,7 @@ public class Container {
         return r;
     }
 
-    public synchronized <T extends Bean> BeanInfo<T> tryToRegisterBean(@Nonnull T instance, @Nonnull String beanName) {
+    public synchronized <T> BeanInfo<T> tryToRegisterBean(@Nonnull T instance, @Nonnull String beanName) {
         BeanInfo<T> r = getBeanInfo(beanName);
         if (r != null) {
             if (r.getInstance() != instance) {
@@ -92,7 +92,7 @@ public class Container {
         return doRegisterBean(instance, beanName);
     }
 
-    public synchronized <T extends Bean> BeanInfo<T> registerBean(@Nonnull T instance, @Nonnull String beanName,
+    public synchronized <T> BeanInfo<T> registerBean(@Nonnull T instance, @Nonnull String beanName,
             @Nonnull Object... dependsOn) {
         if (this.beansByName.containsKey(beanName)) {
             throw new BadStateException("%s - bean already registered: name=%s", getName(), beanName);
@@ -121,11 +121,11 @@ public class Container {
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends Bean> BeanInfo<T> getBeanInfo(@Nonnull Class<T> clazz) {
+    public <T> BeanInfo<T> getBeanInfo(@Nonnull Class<T> clazz) {
         return (BeanInfo<T>) this.beansByClass.get(clazz);
     }
 
-    public <T extends Bean> BeanInfo<T> loadBeanInfo(@Nonnull Class<T> clazz) {
+    public <T> BeanInfo<T> loadBeanInfo(@Nonnull Class<T> clazz) {
         BeanInfo<T> r = getBeanInfo(clazz);
         if (r == null) {
             throw new BadStateException("%s - bean not found: class=%s", getName(), clazz);
@@ -133,7 +133,7 @@ public class Container {
         return r;
     }
 
-    public <T extends Bean> T getBean(@Nonnull Class<T> clazz) {
+    public <T> T getBean(@Nonnull Class<T> clazz) {
         var bi = getBeanInfo(clazz);
         if (bi == null) {
             return null;
@@ -148,11 +148,11 @@ public class Container {
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends Bean> BeanInfo<T> getBeanInfo(@Nonnull String beanName) {
+    public <T> BeanInfo<T> getBeanInfo(@Nonnull String beanName) {
         return (BeanInfo<T>) this.beansByName.get(beanName);
     }
 
-    public <T extends Bean> BeanInfo<T> loadBeanInfo(@Nonnull String beanName) {
+    public <T> BeanInfo<T> loadBeanInfo(@Nonnull String beanName) {
         BeanInfo<T> r = getBeanInfo(beanName);
         if (r == null) {
             throw new BadStateException("%s - bean not found: name=%s", getName(), beanName);
@@ -160,7 +160,7 @@ public class Container {
         return r;
     }
 
-    public <T extends Bean> T getBean(@Nonnull String beanName) {
+    public <T> T getBean(@Nonnull String beanName) {
         BeanInfo<T> bi = getBeanInfo(beanName);
         if (bi == null) {
             return null;
@@ -169,7 +169,7 @@ public class Container {
     }
 
     @Nonnull
-    public <T extends Bean> T loadBean(@Nonnull Class<T> clazz) {
+    public <T> T loadBean(@Nonnull Class<T> clazz) {
         T r = getBean(clazz);
         if (r == null) {
             throw new BadStateException("%s - bean not found: class=%s", getName(), clazz);
@@ -178,7 +178,7 @@ public class Container {
     }
 
     @Nonnull
-    public <T extends Bean> T loadBean(@Nonnull String beanName) {
+    public <T> T loadBean(@Nonnull String beanName) {
         T r = getBean(beanName);
         if (r == null) {
             throw new BadStateException("%s - bean not found: name=%s", getName(), beanName);
