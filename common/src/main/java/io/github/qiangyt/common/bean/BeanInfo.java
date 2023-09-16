@@ -90,11 +90,12 @@ public class BeanInfo<T> {
         for (var depBean : depends) {
             requireNonNull(depBean);
 
-            var depName = ClassHelper.parseBeanName(depBean);
+            var depName = Bean.parseBeanName(depBean);
             var depInfo = container.loadBeanInfo(depName);
 
             if (_dependsOn.containsKey(depName)) {
-                throw new BadStateException("bean %s - found duplicated depending bean: %s", myName, depName);
+                // depends already
+                continue;
             }
             if (depInfo.doesDependsOn(myName)) {
                 throw new BadStateException("bean %s - found cyclic depending bean: %s", myName, depName);

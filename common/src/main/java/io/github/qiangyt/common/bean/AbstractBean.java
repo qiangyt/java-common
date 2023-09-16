@@ -19,8 +19,6 @@ package io.github.qiangyt.common.bean;
 import jakarta.annotation.Nonnull;
 import lombok.Getter;
 
-import io.github.qiangyt.common.misc.ClassHelper;
-
 public abstract class AbstractBean<T extends Bean> implements Bean {
 
     @Getter
@@ -34,7 +32,7 @@ public abstract class AbstractBean<T extends Bean> implements Bean {
     @SuppressWarnings("unchecked")
     protected AbstractBean(String name, @Nonnull Object... dependsOn) {
         if (name == null) {
-            name = ClassHelper.parseBeanName(getClass());
+            name = Bean.parseBeanName(getClass());
         }
         this.beanInfo = (BeanInfo<T>) Container.loadCurrent().registerBean(this, name, dependsOn);
     }

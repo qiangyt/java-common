@@ -16,7 +16,6 @@
  */
 package io.github.qiangyt.common.misc;
 
-import io.github.qiangyt.common.bean.Bean;
 import jakarta.annotation.Nonnull;
 
 /**
@@ -32,20 +31,6 @@ public class ClassHelper {
             return n;
         }
         return n.substring(pos + 1);
-    }
-
-    @Nonnull
-    public static String parseBeanName(@Nonnull Class<?> clazz) {
-        var r = parseTitle(clazz);
-        return r.substring(0, 1).toLowerCase() + r.substring(1);
-    }
-
-    @Nonnull
-    public static String parseBeanName(@Nonnull Object object) {
-        if (object instanceof Bean) {
-            return ((Bean) object).getName();
-        }
-        return parseBeanName(object.getClass());
     }
 
 }

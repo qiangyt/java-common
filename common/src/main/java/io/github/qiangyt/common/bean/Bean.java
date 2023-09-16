@@ -18,6 +18,7 @@ package io.github.qiangyt.common.bean;
 
 import org.slf4j.Logger;
 
+import io.github.qiangyt.common.misc.ClassHelper;
 import jakarta.annotation.Nonnull;
 
 public interface Bean {
@@ -43,6 +44,20 @@ public interface Bean {
     }
 
     default void destroy() throws Exception {
+    }
+
+    @Nonnull
+    static String parseBeanName(@Nonnull Class<?> clazz) {
+        var r = ClassHelper.parseTitle(clazz);
+        return r.substring(0, 1).toLowerCase() + r.substring(1);
+    }
+
+    @Nonnull
+    static String parseBeanName(@Nonnull Object object) {
+        if (object instanceof Bean) {
+            return ((Bean) object).getName();
+        }
+        return parseBeanName(object.getClass());
     }
 
 }

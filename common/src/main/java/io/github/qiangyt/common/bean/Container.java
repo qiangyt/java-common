@@ -16,6 +16,7 @@
  */
 package io.github.qiangyt.common.bean;
 
+import java.util.IdentityHashMap;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -45,6 +46,9 @@ public class Container {
 
     @Getter(AccessLevel.NONE)
     final LinkedHashMap<String, BeanInfo<?>> beansByName = new LinkedHashMap<>();
+
+    @Getter(AccessLevel.NONE)
+    final Map<Object, BeanInfo<?>> beansByInstance = new IdentityHashMap<>();
 
     volatile boolean locked;
 
@@ -79,32 +83,70 @@ public class Container {
         return r;
     }
 
-    public synchronized <T> BeanInfo<T> tryToRegisterBean(@Nonnull T instance, @Nonnull String beanName) {
-        BeanInfo<T> r = getBeanInfo(beanName);
-        if (r != null) {
-            if (r.getInstance() != instance) {
-                throw new BadStateException("%s - bean already registered: name=%s, instance=%s", getName(), beanName,
-                        instance);
-            }
-            return r;
-        }
-
-        return doRegisterBean(instance, beanName);
-    }
-
+    @SuppressWarnings("unchecked")
     public synchronized <T> BeanInfo<T> registerBean(@Nonnull T instance, @Nonnull String beanName,
             @Nonnull Object... dependsOn) {
-        if (this.beansByName.containsKey(beanName)) {
-            throw new BadStateException("%s - bean already registered: name=%s", getName(), beanName);
+        var bi = getBeanInfo(beanName);
+        if (bi != null) {
+            // name already registered
+            var inst = bi.getInstance();
+            if (inst != instance) {
+                // but instance is different
+                throw new BadStateException("%s - bean already registered: name=%s, class=%s, instance=%s", getName(),
+                        bi.getName(), inst.getClass(), inst);
+            }
+
+            bi.dependsOn(this, dependsOn);
+            return (BeanInfo<T>) bi;
+        } else {
+            // name not registered
         }
 
         Class<?> clazz = instance.getClass();
-        if (this.beansByClass.containsKey(clazz)) {
-            throw new BadStateException("%s - bean already registered: class=%s", getName(), clazz);
+        bi = (BeanInfo<Object>) getBeanInfo(clazz);
+        if (bi != null) {
+            // class already registered
+            var inst = bi.getInstance();
+            if (inst != instance) {
+                // but instance is different
+                throw new BadStateException("%s - bean already registered: name=%s, class=%s, instance=%s", getName(),
+                        bi.getName(), inst.getClass(), inst);
+            }
+
+            bi.dependsOn(this, dependsOn);
+            return (BeanInfo<T>) bi;
+        } else {
+            // class not registered
+        }
+
+        bi = (BeanInfo<Object>) this.beansByInstance.get(instance);
+        if (bi != null) {
+            // instance already registered
+            bi.dependsOn(this, dependsOn);
+            return (BeanInfo<T>) bi;
         }
 
         return doRegisterBean(instance, beanName, dependsOn);
     }
+
+    /*
+     * @SuppressWarnings("unchecked") public synchronized <T> BeanInfo<T> registerBean(@Nonnull T instance, @Nonnull
+     * String beanName,
+     *
+     * @Nonnull Object... dependsOn) { var bi = getBeanInfo(beanName); if (bi != null) { var inst = bi.getInstance();
+     * throw new BadStateException("%s - bean already registered: name=%s, class=%s, instance=%s", getName(),
+     * bi.getName(), inst.getClass(), inst); }
+     *
+     * Class<?> clazz = instance.getClass(); bi = (BeanInfo<Object>) getBeanInfo(clazz); if (bi != null) { var inst =
+     * bi.getInstance(); throw new BadStateException("%s - bean already registered: name=%s, class=%s, instance=%s",
+     * getName(), bi.getName(), inst.getClass(), inst); }
+     *
+     * bi = (BeanInfo<Object>) this.beansByInstance.get(instance); if (bi != null) { var inst = bi.getInstance(); throw
+     * new BadStateException("%s - bean already registered: name=%s, class=%s, instance=%s", getName(), bi.getName(),
+     * inst.getClass(), inst); }
+     *
+     * return doRegisterBean(instance, beanName, dependsOn); }
+     */
 
     synchronized <T> BeanInfo<T> doRegisterBean(@Nonnull T instance, @Nonnull String beanName,
             @Nonnull Object... dependsOn) {
@@ -114,6 +156,7 @@ public class Container {
 
         this.beansByName.put(beanName, r);
         this.beansByClass.put(instance.getClass(), r);
+        this.beansByInstance.put(instance, r);
 
         r.dependsOn(this, dependsOn);
 
