@@ -16,7 +16,7 @@
  */
 package io.github.qiangyt.common.bean;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import org.slf4j.Logger;
 

@@ -20,7 +20,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 
 import io.github.qiangyt.common.bean.Dumpable;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import static java.util.Objects.requireNonNull;
 
 public class JacksonHelper {

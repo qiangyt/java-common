@@ -21,7 +21,7 @@ import java.util.Arrays;
 import java.util.Map;
 import static java.util.Objects.requireNonNull;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.buildobjects.process.ExternalProcessFailureException;

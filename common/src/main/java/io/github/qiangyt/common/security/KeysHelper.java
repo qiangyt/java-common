@@ -35,7 +35,7 @@ import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import static java.util.Objects.requireNonNull;
 

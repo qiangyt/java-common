@@ -19,7 +19,7 @@ package io.github.qiangyt.common.json.modules;
 import java.io.IOException;
 import java.util.HashMap;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import org.buildobjects.process.ProcResult;
 

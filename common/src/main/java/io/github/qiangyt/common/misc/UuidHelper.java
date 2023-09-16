@@ -18,7 +18,7 @@ package io.github.qiangyt.common.misc;
 
 import java.util.UUID;
 import static java.util.Objects.requireNonNull;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 /**
  * UUID工具

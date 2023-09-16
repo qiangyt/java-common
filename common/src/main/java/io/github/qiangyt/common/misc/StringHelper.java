@@ -21,7 +21,7 @@ import com.google.common.collect.Lists;
 import java.util.Collection;
 import java.util.Objects;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 /**
  * 字符串操作的工具类

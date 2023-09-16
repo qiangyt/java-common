@@ -20,7 +20,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import static java.util.Objects.requireNonNull;
 
 import org.apache.commons.text.StringSubstitutor;

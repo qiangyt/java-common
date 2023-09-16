@@ -16,7 +16,7 @@
  */
 package io.github.qiangyt.common.security;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;

@@ -19,8 +19,6 @@ package io.github.qiangyt.common.json;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import javax.annotation.concurrent.ThreadSafe;
-
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.core.util.ByteArrayBuilder;
@@ -41,11 +39,11 @@ import io.github.qiangyt.common.json.modules.UriModule;
 import io.github.qiangyt.common.json.modules.UrlModule;
 import io.github.qiangyt.common.misc.StringHelper;
 import lombok.Getter;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import static java.util.Objects.requireNonNull;
 
 @Getter
-@ThreadSafe
+// @ThreadSafe
 public class Jackson {
 
     @Nonnull

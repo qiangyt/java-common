@@ -25,7 +25,7 @@ import io.github.qiangyt.common.json.Jackson;
 import io.github.qiangyt.common.json.JacksonHelper;
 import io.github.qiangyt.common.yaml.SnakeYaml;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 /**
  * 方便调试输出（JSON、YAML格式）

@@ -22,7 +22,7 @@ import net.logstash.logback.argument.StructuredArgument;
 import net.logstash.logback.argument.StructuredArguments;
 import io.github.qiangyt.common.bean.Dumpable;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import static java.util.Objects.requireNonNull;
 
 public class LogHelper {

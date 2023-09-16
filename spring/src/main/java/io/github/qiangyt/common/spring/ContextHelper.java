@@ -16,7 +16,7 @@
  */
 package io.github.qiangyt.common.spring;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;

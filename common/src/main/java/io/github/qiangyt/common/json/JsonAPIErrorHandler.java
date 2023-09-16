@@ -18,7 +18,7 @@ package io.github.qiangyt.common.json;
 
 import java.io.IOException;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import io.github.qiangyt.common.err.BadStateException;
 

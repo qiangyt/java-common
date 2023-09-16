@@ -16,7 +16,7 @@
  */
 package io.github.qiangyt.common.json;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import static java.util.Objects.requireNonNull;

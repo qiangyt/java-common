@@ -18,7 +18,7 @@ package io.github.qiangyt.common.misc;
 
 import java.time.format.DateTimeFormatter;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 public class DateHelper {
 

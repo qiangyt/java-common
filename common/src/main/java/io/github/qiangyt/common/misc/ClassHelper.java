@@ -16,7 +16,7 @@
  */
 package io.github.qiangyt.common.misc;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 /**
  *

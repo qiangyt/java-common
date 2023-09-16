@@ -16,7 +16,7 @@
  */
 package io.github.qiangyt.common.json;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import static java.util.Objects.requireNonNull;
 
 import java.net.InetSocketAddress;
