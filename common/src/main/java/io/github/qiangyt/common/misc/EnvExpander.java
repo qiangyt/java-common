@@ -25,6 +25,7 @@ import jakarta.annotation.Nonnull;
 import static java.util.Objects.requireNonNull;
 
 import org.apache.commons.text.StringSubstitutor;
+import org.apache.commons.vfs2.FileObject;
 
 import io.github.cdimascio.dotenv.Dotenv;
 import lombok.Getter;
@@ -89,6 +90,10 @@ public class EnvExpander {
         CURRENT.set(expander);
     }
 
+    public static EnvExpander getCurrent() {
+        return CURRENT.get();
+    }
+
     public static String expands(@Nonnull String input) {
         var inst = CURRENT.get();
         requireNonNull(inst);
@@ -105,8 +110,23 @@ public class EnvExpander {
         return inst.expand(input);
     }
 
+    public static File tryExpands(@Nonnull File input) {
+        var inst = CURRENT.get();
+        if (inst == null) {
+            return input;
+        }
+
+        return inst.expand(input);
+    }
+
     public @Nonnull String expand(@Nonnull String input) {
         return requireNonNull(getSubstitutor().replace(input));
+    }
+
+    public @Nonnull FileObject expand(@Nonnull FileObject input) {
+        var p = input.getPath().toString();
+        var r = expand(p);
+        return VfsHelper.resolveFile(r);
     }
 
     public @Nonnull String expand(@Nonnull String text, Function<String, String> func) {
@@ -128,7 +148,7 @@ public class EnvExpander {
 
     public @Nonnull File expand(@Nonnull File input) {
         requireNonNull(input);
-        return new File(expand(requireNonNull(input.getAbsolutePath())));
+        return new File(expand(requireNonNull(input.getPath())));
     }
 
 }

@@ -16,12 +16,15 @@
  */
 package io.github.qiangyt.common.security.jackson;
 
+import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.HashMap;
+import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
+import io.github.qiangyt.common.err.BadStateException;
 import io.github.qiangyt.common.json.JacksonDeserializer;
 import io.github.qiangyt.common.json.JacksonSerializer;
 import io.github.qiangyt.common.misc.Codec;
@@ -39,36 +42,40 @@ public class X509CertificateModule {
 
         @Override
         protected void dump(X509Certificate value, @Nonnull JsonGenerator gen) throws Exception {
-            staticDump(value, gen);
+            var map = staticDump(value);
+            gen.writeObject(map);
         }
 
-        public static void staticDump(X509Certificate value, @Nonnull JsonGenerator gen) throws Exception {
+        public static Map<String, Object> staticDump(X509Certificate value) {
             var r = new HashMap<String, Object>();
-            r.put("notBefore", value.getNotBefore());
-            r.put("notAfter", value.getNotAfter());
-            r.put("serialNumber", value.getSerialNumber());
-            r.put("signature", Codec.bytesToBase64(value.getSignature()));
-            r.put("type", value.getType());
-            r.put("version", value.getVersion());
-            r.put("publicKey", value.getPublicKey());
-            r.put("sigAlgName", value.getSigAlgName());
-            r.put("sigAlgOID", value.getSigAlgOID());
-            r.put("sigAlgParams", Codec.bytesToBase64(value.getSigAlgParams()));
-            r.put("TBSCertificate", Codec.bytesToBase64(value.getTBSCertificate()));
-            r.put("subjectUniqueID", value.getSubjectUniqueID());
-            r.put("subjectX500Principal", value.getSubjectX500Principal());
-            r.put("basicConstraints", value.getBasicConstraints());
-            r.put("extendedKeyUsage", value.getExtendedKeyUsage());
-            r.put("criticalExtensionOIDs", value.getCriticalExtensionOIDs());
-            r.put("issuerAlternativeNames", value.getIssuerAlternativeNames());
-            r.put("issuerUniqueID", StringHelper.toString(value.getIssuerUniqueID()));
-            r.put("issuerX500Principal", value.getIssuerX500Principal());
-            r.put("nonCriticalExtensionOIDs", value.getNonCriticalExtensionOIDs());
-            r.put("keyUsage", value.getKeyUsage());
-            r.put("subjectAlternativeNames", value.getSubjectAlternativeNames());
-            r.put("encoded", Codec.bytesToPem(value.getEncoded(), null));
-
-            gen.writeObject(r);
+            try {
+                r.put("notBefore", value.getNotBefore());
+                r.put("notAfter", value.getNotAfter());
+                r.put("serialNumber", value.getSerialNumber());
+                r.put("signature", Codec.bytesToBase64(value.getSignature()));
+                r.put("type", value.getType());
+                r.put("version", value.getVersion());
+                r.put("publicKey", value.getPublicKey());
+                r.put("sigAlgName", value.getSigAlgName());
+                r.put("sigAlgOID", value.getSigAlgOID());
+                r.put("sigAlgParams", Codec.bytesToBase64(value.getSigAlgParams()));
+                r.put("TBSCertificate", Codec.bytesToBase64(value.getTBSCertificate()));
+                r.put("subjectUniqueID", value.getSubjectUniqueID());
+                r.put("subjectX500Principal", value.getSubjectX500Principal());
+                r.put("basicConstraints", value.getBasicConstraints());
+                r.put("extendedKeyUsage", value.getExtendedKeyUsage());
+                r.put("criticalExtensionOIDs", value.getCriticalExtensionOIDs());
+                r.put("issuerAlternativeNames", value.getIssuerAlternativeNames());
+                r.put("issuerUniqueID", StringHelper.toString(value.getIssuerUniqueID()));
+                r.put("issuerX500Principal", value.getIssuerX500Principal());
+                r.put("nonCriticalExtensionOIDs", value.getNonCriticalExtensionOIDs());
+                r.put("keyUsage", value.getKeyUsage());
+                r.put("subjectAlternativeNames", value.getSubjectAlternativeNames());
+                r.put("encoded", Codec.bytesToPem(value.getEncoded(), null));
+            } catch (CertificateException e) {
+                throw new BadStateException(e);
+            }
+            return r;
         }
     }
 

@@ -14,18 +14,30 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package io.github.qiangyt.common.security.jackson;
+package io.github.qiangyt.common.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import io.github.qiangyt.common.security.jackson.AccountModule;
+import io.github.qiangyt.common.security.jackson.CertificateModule;
+import io.github.qiangyt.common.security.jackson.Dns01ChallengeModule;
+import io.github.qiangyt.common.security.jackson.IdentifierModule;
+import io.github.qiangyt.common.security.jackson.KeyModule;
+import io.github.qiangyt.common.security.jackson.X509CertificateFileModule;
+import io.github.qiangyt.common.security.jackson.KeyPairModule;
+import io.github.qiangyt.common.security.jackson.OrderModule;
+import io.github.qiangyt.common.security.jackson.PrincipalModule;
+import io.github.qiangyt.common.security.jackson.ProblemModule;
+import io.github.qiangyt.common.security.jackson.StatusModule;
+import io.github.qiangyt.common.security.jackson.X509CertificateModule;
 import jakarta.annotation.Nonnull;
 
-public class SecurityModules {
+public class JacksonModules {
 
     public static void register(@Nonnull ObjectMapper mapper, boolean expandEnv, boolean dump) {
         mapper.registerModule(KeyModule.build(expandEnv, dump));
         mapper.registerModule(KeyPairModule.build(expandEnv, dump));
-        mapper.registerModule(KeyPairSourceModule.build(expandEnv, dump));
+        mapper.registerModule(X509CertificateFileModule.build(expandEnv, dump));
         mapper.registerModule(PrincipalModule.build(expandEnv, dump));
         mapper.registerModule(X509CertificateModule.build(expandEnv, dump));
         mapper.registerModule(IdentifierModule.build(expandEnv, dump));
@@ -35,6 +47,7 @@ public class SecurityModules {
         mapper.registerModule(Dns01ChallengeModule.build(expandEnv, dump));
         mapper.registerModule(CertificateModule.build(expandEnv, dump));
         mapper.registerModule(OrderModule.build(expandEnv, dump));
+        mapper.registerModule(X509CertificateFileModule.build(expandEnv, dump));
     }
 
 }

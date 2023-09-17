@@ -19,6 +19,7 @@ package io.github.qiangyt.common.security.jackson;
 import java.io.StringWriter;
 import java.security.KeyPair;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.shredzone.acme4j.util.KeyPairUtils;
 
@@ -52,15 +53,21 @@ public class KeyPairModule {
 
         @Override
         protected void dump(@Nonnull KeyPair value, @Nonnull JsonGenerator gen) throws Exception {
-            staticDump(value, gen);
+            gen.writeObject(staticDump(value));
         }
 
-        public static void staticDump(@Nonnull KeyPair value, @Nonnull JsonGenerator gen) throws Exception {
+        public static Map<String, Object> staticDump(@Nonnull KeyPair value) {
             var r = new HashMap<String, Object>();
-            r.put("private", value.getPrivate());
-            r.put("public", value.getPublic());
 
-            gen.writeObject(r);
+            if (value == null) {
+                r.put("private", null);
+                r.put("public", null);
+            } else {
+                r.put("private", value.getPrivate());
+                r.put("public", value.getPublic());
+            }
+
+            return r;
         }
     }
 

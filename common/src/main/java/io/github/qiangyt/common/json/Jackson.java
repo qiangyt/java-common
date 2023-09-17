@@ -40,7 +40,7 @@ import io.github.qiangyt.common.json.modules.ProcResultModule;
 import io.github.qiangyt.common.json.modules.UriModule;
 import io.github.qiangyt.common.json.modules.UrlModule;
 import io.github.qiangyt.common.misc.StringHelper;
-import io.github.qiangyt.common.security.jackson.SecurityModules;
+import io.github.qiangyt.common.security.JacksonModules;
 import jakarta.annotation.Nonnull;
 import lombok.Getter;
 
@@ -85,7 +85,7 @@ public class Jackson {
         mapper.registerModule(UrlModule.build(expandEnv, dump));
         mapper.registerModule(InetAddressModule.build(expandEnv, dump));
 
-        SecurityModules.register(mapper, expandEnv, dump);
+        JacksonModules.register(mapper, expandEnv, dump);
 
         mapper.setSerializationInclusion(Include.NON_NULL);
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
