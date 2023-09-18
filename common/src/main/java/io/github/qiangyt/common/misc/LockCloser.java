@@ -14,29 +14,37 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package io.github.qiangyt.common.bean;
+package io.github.qiangyt.common.misc;
+
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
 
 import jakarta.annotation.Nonnull;
-import lombok.Getter;
 
-public abstract class AbstractBean<T extends Bean> implements Bean {
+public class LockCloser implements AutoCloseable {
 
-    @Getter
     @Nonnull
-    final BeanInfo<T> beanInfo;
+    final Lock lock;
 
-    protected AbstractBean(@Nonnull Object... dependsOn) {
-        this(null, dependsOn);
+    public LockCloser(@Nonnull Lock lock) {
+        this.lock = lock;
     }
 
-    @SuppressWarnings("unchecked")
-    protected AbstractBean(String name, @Nonnull Object... dependsOn) {
-        if (name == null) {
-            name = Bean.parseBeanName(getClass());
-        }
+    @Nonnull
+    public static LockCloser read(@Nonnull ReadWriteLock rwlock) {
+        var lock = rwlock.readLock();
+        return new LockCloser(lock);
+    }
 
-        this.beanInfo = (BeanInfo<T>) Container.loadCurrent().registerBean(this, name);
-        this.beanInfo.dependsOn(dependsOn);
+    @Nonnull
+    public static LockCloser write(@Nonnull ReadWriteLock rwlock) {
+        var lock = rwlock.writeLock();
+        return new LockCloser(lock);
+    }
+
+    @Override
+    public void close() {
+        this.lock.unlock();
     }
 
 }

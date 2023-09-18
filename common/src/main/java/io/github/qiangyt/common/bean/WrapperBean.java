@@ -19,24 +19,25 @@ package io.github.qiangyt.common.bean;
 import jakarta.annotation.Nonnull;
 import lombok.Getter;
 
-public abstract class AbstractBean<T extends Bean> implements Bean {
+@Getter
+public abstract class WrapperBean<T> implements Bean {
 
-    @Getter
     @Nonnull
     final BeanInfo<T> beanInfo;
 
-    protected AbstractBean(@Nonnull Object... dependsOn) {
-        this(null, dependsOn);
-    }
+    @Nonnull
+    final T instance;
 
     @SuppressWarnings("unchecked")
-    protected AbstractBean(String name, @Nonnull Object... dependsOn) {
+    public WrapperBean(String name, @Nonnull T instance, @Nonnull Object... dependsOn) {
         if (name == null) {
-            name = Bean.parseBeanName(getClass());
+            name = Bean.parseBeanName(instance.getClass());
         }
 
         this.beanInfo = (BeanInfo<T>) Container.loadCurrent().registerBean(this, name);
         this.beanInfo.dependsOn(dependsOn);
+
+        this.instance = instance;
     }
 
 }

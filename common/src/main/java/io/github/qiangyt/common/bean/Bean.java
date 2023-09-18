@@ -27,8 +27,8 @@ public interface Bean {
     <T extends Bean> BeanInfo<T> getBeanInfo();
 
     @Nonnull
-    default String getName() {
-        return getBeanInfo().getName();
+    default String getPrimaryName() {
+        return getBeanInfo().getPrimaryName();
     }
 
     @Nonnull
@@ -55,7 +55,7 @@ public interface Bean {
     @Nonnull
     static String parseBeanName(@Nonnull Object object) {
         if (object instanceof Bean) {
-            return ((Bean) object).getName();
+            return ((Bean) object).getPrimaryName();
         }
         return parseBeanName(object.getClass());
     }
