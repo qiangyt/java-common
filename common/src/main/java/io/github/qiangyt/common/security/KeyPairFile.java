@@ -18,7 +18,6 @@ package io.github.qiangyt.common.security;
 
 import static java.util.Objects.requireNonNull;
 
-import java.io.File;
 import java.security.KeyPair;
 
 import org.apache.commons.vfs2.FileObject;
@@ -36,25 +35,17 @@ public class KeyPairFile {
 
     KeyPair content;
 
-    final FileObject file;
+    final String file;
 
     FileObject fileExpanded;
 
-    public KeyPairFile(@Nonnull File file) {
-        this(file.getPath());
-    }
-
-    public KeyPairFile(@Nonnull String path) {
-        this(VfsHelper.resolveFile(path));
-    }
-
-    public KeyPairFile(@Nonnull FileObject file) {
+    public KeyPairFile(@Nonnull String file) {
         this.file = file;
     }
 
     @Override
     public String toString() {
-        return getFile().getPath().toString();
+        return getFile();
     }
 
     public void resolveContent(@Nonnull EnvExpander expander, int newKeySize) {
@@ -66,15 +57,11 @@ public class KeyPairFile {
 
     public boolean readContent(@Nonnull EnvExpander expander) {
         var expanded = (expander == null) ? file : expander.expand(file);
-        this.fileExpanded = expanded;
+        this.fileExpanded = VfsHelper.resolveFile(expanded);
 
-        try {
-            if (expanded.exists()) {
-                this.content = KeysHelper.readKeyPairFile(expanded);
-                return true;
-            }
-        } catch (FileSystemException e) {
-            throw new BadStateException(e);
+        if (VfsHelper.fileExists(this.fileExpanded)) {
+            this.content = KeysHelper.readKeyPairFile(expanded);
+            return true;
         }
 
         return false;

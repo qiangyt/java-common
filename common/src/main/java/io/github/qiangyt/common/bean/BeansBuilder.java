@@ -19,6 +19,6 @@ package io.github.qiangyt.common.bean;
 @FunctionalInterface
 public interface BeansBuilder {
 
-    void build(Container container) throws Exception;
+    void build(BeanContainer container) throws Exception;
 
 }

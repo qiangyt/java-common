@@ -24,26 +24,26 @@ import jakarta.annotation.Nonnull;
 public interface Bean {
 
     @Nonnull
-    <T extends Bean> BeanInfo<T> getBeanInfo();
+    <T extends Bean> BeanMetadata<T> getBeanMetadata();
 
     @Nonnull
     default String getPrimaryName() {
-        return getBeanInfo().getPrimaryName();
+        return getBeanMetadata().getPrimaryName();
     }
 
     @Nonnull
     default Logger log() {
-        return getBeanInfo().log();
+        return getBeanMetadata().log();
     }
 
     default boolean isInited() {
-        return getBeanInfo().isInited();
+        return getBeanMetadata().isInited();
     }
 
-    default void init() throws Exception {
+    default void doInit() throws Exception {
     }
 
-    default void destroy() throws Exception {
+    default void doDestroy() throws Exception {
     }
 
     @Nonnull

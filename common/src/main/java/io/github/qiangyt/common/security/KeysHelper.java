@@ -28,6 +28,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
+import java.security.Security;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Collection;
@@ -45,6 +46,7 @@ import org.apache.commons.vfs2.FileSystemException;
 import org.bouncycastle.openssl.PEMParser;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.shredzone.acme4j.Certificate;
 import org.shredzone.acme4j.util.CSRBuilder;
 import org.shredzone.acme4j.util.KeyPairUtils;
@@ -54,6 +56,10 @@ import io.github.qiangyt.common.misc.Codec;
 import io.github.qiangyt.common.misc.VfsHelper;
 
 public class KeysHelper {
+
+    static {
+        Security.addProvider(new BouncyCastleProvider());
+    }
 
     public static boolean isKey(@Nonnull String keyText) {
         return keyText.contains("-----BEGIN");

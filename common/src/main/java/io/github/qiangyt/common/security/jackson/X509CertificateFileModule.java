@@ -37,13 +37,13 @@ public class X509CertificateFileModule {
 
         @Override
         protected void serialize(@Nonnull X509CertificateFile value, @Nonnull JsonGenerator gen) throws Exception {
-            gen.writeString(value.getFile().getPath().toString());
+            gen.writeString(value.getFile());
         }
 
         @Override
         protected void dump(@Nonnull X509CertificateFile value, @Nonnull JsonGenerator gen) throws Exception {
             Map<String, Object> map = new HashMap<>();
-            map.put("file", value.getFile().getPath().toString());
+            map.put("file", value.getFile());
             map.put("content", X509CertificateModule.Serializer.staticDump(value.getContent()));
 
             gen.writeObject(map);

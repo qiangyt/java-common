@@ -25,7 +25,6 @@ import jakarta.annotation.Nonnull;
 import static java.util.Objects.requireNonNull;
 
 import org.apache.commons.text.StringSubstitutor;
-import org.apache.commons.vfs2.FileObject;
 
 import io.github.cdimascio.dotenv.Dotenv;
 import lombok.Getter;
@@ -121,12 +120,6 @@ public class EnvExpander {
 
     public @Nonnull String expand(@Nonnull String input) {
         return requireNonNull(getSubstitutor().replace(input));
-    }
-
-    public @Nonnull FileObject expand(@Nonnull FileObject input) {
-        var p = input.getPath().toString();
-        var r = expand(p);
-        return VfsHelper.resolveFile(r);
     }
 
     public @Nonnull String expand(@Nonnull String text, Function<String, String> func) {

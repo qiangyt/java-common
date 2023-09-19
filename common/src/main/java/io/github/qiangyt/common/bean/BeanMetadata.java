@@ -21,7 +21,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -33,7 +32,7 @@ import io.github.qiangyt.common.misc.LockCloser;
 import jakarta.annotation.Nonnull;
 import lombok.Getter;
 
-public class BeanInfo<T> {
+public class BeanMetadata<T> {
 
     @Getter
     @Nonnull
@@ -53,23 +52,26 @@ public class BeanInfo<T> {
     final Logger log;
 
     @Nonnull
-    LinkedHashMap<String, BeanInfo<?>> dependsOn = new LinkedHashMap<>();
+    LinkedHashMap<String, BeanMetadata<?>> dependsOn = new LinkedHashMap<>();
 
     @Nonnull
-    LinkedHashMap<String, BeanInfo<?>> dependedBy = new LinkedHashMap<>();
+    LinkedHashMap<String, BeanMetadata<?>> dependedBy = new LinkedHashMap<>();
 
     @Getter
     WrapperBean<T> wrapper;
 
     @Getter
     @Nonnull
-    final Container container;
+    final BeanContainer container;
 
     @Nonnull
     final ReentrantReadWriteLock lock;
 
+    @Getter
+    boolean logLifecycle = true;
+
     @SuppressWarnings("unchecked")
-    public BeanInfo(@Nonnull Container container, @Nonnull T instanceOrWrapper, @Nonnull String... names) {
+    public BeanMetadata(@Nonnull BeanContainer container, @Nonnull T instanceOrWrapper, @Nonnull String... names) {
         if (names.length == 0) {
             throw new BadStateException("names cannot be empty");
         }
@@ -95,6 +97,20 @@ public class BeanInfo<T> {
         }
 
         this.log = LoggerFactory.getLogger(primaryName);
+    }
+
+    public Bean getBeanInstance() {
+        var w = getWrapper();
+        if (w != null) {
+            return w;
+        }
+
+        var i = getInstance();
+        if (i instanceof Bean) {
+            return (Bean) i;
+        }
+
+        return null;
     }
 
     @Nonnull
@@ -134,7 +150,7 @@ public class BeanInfo<T> {
         }
 
         try {
-            var that = (BeanInfo<?>) obj;
+            var that = (BeanMetadata<?>) obj;
             return getInstance() == that.getInstance();
         } catch (ClassCastException e) {
             return false;
@@ -158,22 +174,30 @@ public class BeanInfo<T> {
 
     public boolean doesDependsOn(@Nonnull String name) {
         if (notThreadSafe()) {
-            return this.dependsOn.containsKey(name);
+            return doDoesDependsOn(name);
         }
 
         try (var rl = lock4Read()) {
-            return this.dependsOn.containsKey(name);
+            return doDoesDependsOn(name);
         }
+    }
+
+    boolean doDoesDependsOn(@Nonnull String name) {
+        return this.dependsOn.containsKey(name);
     }
 
     public boolean isDependedBy(@Nonnull String name) {
         if (notThreadSafe()) {
-            return this.dependedBy.containsKey(name);
+            return doDependedBy(name);
         }
 
         try (var rl = lock4Read()) {
-            return this.dependedBy.containsKey(name);
+            return doDependedBy(name);
         }
+    }
+
+    boolean doDependedBy(@Nonnull String name) {
+        return this.dependedBy.containsKey(name);
     }
 
     public void ensureNotInited() {
@@ -182,76 +206,64 @@ public class BeanInfo<T> {
         }
     }
 
-    void addDependedBy(@Nonnull String name, @Nonnull BeanInfo<?> bi) {
+    void addDependedBy(@Nonnull String name, @Nonnull BeanMetadata<?> bi) {
         if (notThreadSafe()) {
-            this.dependedBy.put(name, bi);
+            doAddDependedBy(name, bi);
+            return;
         }
 
         try (var wl = lock4Write()) {
-            this.dependedBy.put(name, bi);
+            doAddDependedBy(name, bi);
         }
     }
 
-    public <T2> Collection<T2> dependsOn(@Nonnull Class<T2> interfase) {
-        var beanInfos = getContainer().listBeanInfosByInterface(interfase);
-        dependsOn(beanInfos);
+    void doAddDependedBy(@Nonnull String name, @Nonnull BeanMetadata<?> bi) {
+        this.dependedBy.put(name, bi);
+    }
 
-        var r = new ArrayList<T2>(beanInfos.size());
-        for (var bi : beanInfos) {
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    <T2> Collection<T2> dependsOn(@Nonnull Class<T2> interfase) {
+        var metadatas = getContainer().listMetadatasByInterface(interfase);
+        dependsOn((Collection) metadatas);
+
+        var r = new ArrayList<T2>(metadatas.size());
+        for (var bi : metadatas) {
             r.add(bi.getInstance());
         }
         return r;
     }
 
-    public void dependsOn(@Nonnull Object... depends) {
-        List<BeanInfo<?>> dependsBeanInfos = new ArrayList<>(depends.length);
-
-        for (var depBean : depends) {
-            BeanInfo<?> depInfo;
-            if (depBean instanceof BeanInfo) {
-                depInfo = (BeanInfo<?>) depBean;
-            } else {
-                depInfo = container.loadBeanInfoByInstance(depBean);
-            }
-
-            dependsBeanInfos.add(depInfo);
-        }
-
-        dependsOn(depends);
-    }
-
-    public void dependsOn(@Nonnull Collection<BeanInfo<?>> dependsBeanInfo) {
+    void dependsOn(@Nonnull Collection<BeanMetadata<?>> dependsMetadata) {
         if (notThreadSafe()) {
-            doDependsOn(dependsBeanInfo);
+            doDependsOn(dependsMetadata);
+            return;
         }
 
         try (var wl = lock4Write()) {
-            doDependsOn(dependsBeanInfo);
+            doDependsOn(dependsMetadata);
         }
     }
 
-    void doDependsOn(@Nonnull Collection<BeanInfo<?>> dependsBeanInfos) {
+    void doDependsOn(@Nonnull Collection<BeanMetadata<?>> dependsMetadatas) {
         ensureNotInited();
 
-        var _dependsOn = new LinkedHashMap<String, BeanInfo<?>>(this.dependsOn);
+        var _dependsOn = new LinkedHashMap<String, BeanMetadata<?>>(this.dependsOn);
         var myName = getPrimaryName();
 
-        for (var depBeanInfo : dependsBeanInfos) {
-            var depName = depBeanInfo.getPrimaryName();
+        for (var depMetadata : dependsMetadatas) {
+            var depName = depMetadata.getPrimaryName();
 
             if (_dependsOn.containsKey(depName)) {
                 // depends already
                 continue;
             }
 
-            if (depBeanInfo.doesDependsOn(myName)) {
+            if (depMetadata.doesDependsOn(myName)) {
                 throw new BadStateException("bean %s - found cyclic depending bean: %s", myName, depName);
             }
-            synchronized (depBeanInfo) {
-                depBeanInfo.addDependedBy(myName, this);
-            }
+            depMetadata.doAddDependedBy(myName, this);
 
-            _dependsOn.put(depName, depBeanInfo);
+            _dependsOn.put(depName, depMetadata);
         }
 
         this.dependsOn = _dependsOn;
@@ -273,14 +285,35 @@ public class BeanInfo<T> {
             return;
         }
 
-        this.dependsOn.values().forEach(BeanInfo::init);
+        this.dependsOn.values().forEach(BeanMetadata::init);
 
-        var inst = getInstance();
-        if (inst instanceof Bean) {
+        var logHere = isLogLifecycle();
+        var lg = log();
+
+        var b = getBeanInstance();
+        if (b != null) {
+            if (logHere) {
+                lg.info("init - begin");
+            } else {
+                lg.debug("init - begin");
+            }
+
             try {
-                ((Bean) inst).init();
+                ((Bean) b).doInit();
             } catch (Exception e) {
                 throw new BadStateException(e, "bean %s - failed to init", getPrimaryName());
+            }
+
+            if (logHere) {
+                lg.info("init - done");
+            } else {
+                lg.debug("init - done");
+            }
+        } else {
+            if (logHere) {
+                lg.info("init() is skipped as this is not implemented");
+            } else {
+                lg.debug("init() is skipped as this is not implemented");
             }
         }
 
@@ -303,18 +336,38 @@ public class BeanInfo<T> {
             return true;
         }
 
-        this.dependedBy.values().forEach(BeanInfo::destroy);
+        this.dependedBy.values().forEach(BeanMetadata::destroy);
 
-        var inst = getInstance();
-        if (inst instanceof Bean) {
+        var logHere = isLogLifecycle();
+        var lg = log();
+
+        var b = getBeanInstance();
+        if (b != null) {
+            if (logHere) {
+                lg.info("destroy - begin");
+            } else {
+                lg.debug("destroy - begin");
+            }
+
             try {
-                ((Bean) inst).destroy();
-                return true;
+                ((Bean) b).doDestroy();
             } catch (Exception e) {
-                log().error("bean {} - failed to destroy", getPrimaryName(), e);
+                lg.error("bean {} - failed to destroy", getPrimaryName(), e);
                 return false;
             } finally {
                 this.inited = false;
+            }
+
+            if (logHere) {
+                lg.info("destroy - done");
+            } else {
+                lg.debug("destroy - done");
+            }
+        } else {
+            if (logHere) {
+                lg.info("destroy() is skipped as this is not implemented");
+            } else {
+                lg.debug("destroy() is skipped as this is not implemented");
             }
         }
 

@@ -16,6 +16,9 @@
  */
 package io.github.qiangyt.common.bean;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 import jakarta.annotation.Nonnull;
 import lombok.Getter;
 
@@ -23,20 +26,44 @@ public abstract class AbstractBean<T extends Bean> implements Bean {
 
     @Getter
     @Nonnull
-    final BeanInfo<T> beanInfo;
+    final BeanMetadata<T> beanMetadata;
 
-    protected AbstractBean(@Nonnull Object... dependsOn) {
-        this(null, dependsOn);
+    protected AbstractBean(@Nonnull BeanContainer container, @Nonnull Object... dependsOn) {
+        this(null, container, Arrays.asList(dependsOn));
+    }
+
+    protected AbstractBean(@Nonnull BeanContainer container, @Nonnull Collection<?> dependsOn) {
+        this(null, container, dependsOn);
+    }
+
+    protected AbstractBean(@Nonnull BeanContainer container, @Nonnull Class<?> interfaceDependsOn) {
+        this(null, container, interfaceDependsOn);
+    }
+
+    protected AbstractBean(String name, @Nonnull BeanContainer container, @Nonnull Object... dependsOn) {
+        this(name, container, Arrays.asList(dependsOn));
     }
 
     @SuppressWarnings("unchecked")
-    protected AbstractBean(String name, @Nonnull Object... dependsOn) {
+    protected AbstractBean(String name, @Nonnull BeanContainer container, @Nonnull Collection<?> dependsOn) {
         if (name == null) {
             name = Bean.parseBeanName(getClass());
         }
 
-        this.beanInfo = (BeanInfo<T>) Container.loadCurrent().registerBean(this, name);
-        this.beanInfo.dependsOn(dependsOn);
+        this.beanMetadata = (BeanMetadata<T>) container.registerBean(this, name);
+
+        var dependsOnMetadatas = container.normalizeMetadatas(dependsOn);
+        this.beanMetadata.dependsOn(dependsOnMetadatas);
+    }
+
+    @SuppressWarnings("unchecked")
+    protected AbstractBean(String name, @Nonnull BeanContainer container, @Nonnull Class<?> interfaceDependsOn) {
+        if (name == null) {
+            name = Bean.parseBeanName(getClass());
+        }
+
+        this.beanMetadata = (BeanMetadata<T>) container.registerBean(this, name);
+        this.beanMetadata.dependsOn(interfaceDependsOn);
     }
 
 }

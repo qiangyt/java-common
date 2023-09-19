@@ -16,6 +16,9 @@
  */
 package io.github.qiangyt.common.bean;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 import jakarta.annotation.Nonnull;
 import lombok.Getter;
 
@@ -23,21 +26,41 @@ import lombok.Getter;
 public abstract class WrapperBean<T> implements Bean {
 
     @Nonnull
-    final BeanInfo<T> beanInfo;
+    final BeanMetadata<T> beanMetadata;
 
     @Nonnull
     final T instance;
 
+    public WrapperBean(String name, @Nonnull BeanContainer container, @Nonnull T instance,
+            @Nonnull Object... dependsOn) {
+        this(name, container, instance, Arrays.asList(dependsOn));
+    }
+
     @SuppressWarnings("unchecked")
-    public WrapperBean(String name, @Nonnull T instance, @Nonnull Object... dependsOn) {
+    public WrapperBean(String name, @Nonnull BeanContainer container, @Nonnull T instance,
+            @Nonnull Collection<?> dependsOn) {
         if (name == null) {
             name = Bean.parseBeanName(instance.getClass());
         }
 
-        this.beanInfo = (BeanInfo<T>) Container.loadCurrent().registerBean(this, name);
-        this.beanInfo.dependsOn(dependsOn);
+        this.instance = instance;
+        this.beanMetadata = (BeanMetadata<T>) container.registerBean(this, name);
+
+        var dependsOnMetadatas = container.normalizeMetadatas(dependsOn);
+        this.beanMetadata.dependsOn(dependsOnMetadatas);
+    }
+
+    @SuppressWarnings("unchecked")
+    public WrapperBean(String name, @Nonnull BeanContainer container, @Nonnull T instance,
+            Class<?> interfaceDependsOn) {
+        if (name == null) {
+            name = Bean.parseBeanName(instance.getClass());
+        }
 
         this.instance = instance;
+        this.beanMetadata = (BeanMetadata<T>) container.registerBean(this, name);
+
+        this.beanMetadata.dependsOn(interfaceDependsOn);
     }
 
 }

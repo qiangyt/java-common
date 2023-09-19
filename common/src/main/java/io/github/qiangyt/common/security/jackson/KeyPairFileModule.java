@@ -39,13 +39,13 @@ public class KeyPairFileModule {
 
         @Override
         protected void serialize(@Nonnull KeyPairFile value, @Nonnull JsonGenerator gen) throws Exception {
-            gen.writeString(value.getFile().getPath().toString());
+            gen.writeString(value.getFile());
         }
 
         @Override
         protected void dump(@Nonnull KeyPairFile value, @Nonnull JsonGenerator gen) {
             Map<String, Object> map = new HashMap<>();
-            map.put("file", value.getFile().getPath().toString());
+            map.put("file", value.getFile());
             map.put("content", KeyPairModule.Serializer.staticDump(value.getContent()));
 
             try {

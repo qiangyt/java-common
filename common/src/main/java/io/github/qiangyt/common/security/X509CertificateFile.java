@@ -16,14 +16,11 @@
  */
 package io.github.qiangyt.common.security;
 
-import java.io.File;
 import java.security.cert.X509Certificate;
 
 import org.apache.commons.vfs2.FileObject;
-import org.apache.commons.vfs2.FileSystemException;
 import org.shredzone.acme4j.Certificate;
 
-import io.github.qiangyt.common.err.BadStateException;
 import io.github.qiangyt.common.misc.EnvExpander;
 import io.github.qiangyt.common.misc.VfsHelper;
 import jakarta.annotation.Nonnull;
@@ -34,40 +31,27 @@ public class X509CertificateFile {
 
     X509Certificate content;
 
-    final FileObject file;
+    final String file;
 
     FileObject fileExpanded;
 
-    public X509CertificateFile(@Nonnull File file) {
-        this(file.getPath());
-    }
-
-    public X509CertificateFile(@Nonnull String path) {
-        this(VfsHelper.resolveFile(path));
-    }
-
-    public X509CertificateFile(@Nonnull FileObject file) {
+    public X509CertificateFile(@Nonnull String file) {
         this.file = file;
     }
 
     @Override
     public String toString() {
-        return getFile().getPath().toString();
+        return getFile();
     }
 
     public boolean readContent(@Nonnull EnvExpander expander) {
         var expanded = (expander == null) ? file : expander.expand(file);
-        this.fileExpanded = expanded;
+        this.fileExpanded = VfsHelper.resolveFile(expanded);
 
-        try {
-            if (expanded.exists()) {
-                this.content = KeysHelper.readCertPemFile(expanded);
-                return true;
-            }
-        } catch (FileSystemException e) {
-            throw new BadStateException(e);
+        if (VfsHelper.fileExists(this.fileExpanded)) {
+            this.content = KeysHelper.readCertPemFile(this.fileExpanded);
+            return true;
         }
-
         return false;
     }
 

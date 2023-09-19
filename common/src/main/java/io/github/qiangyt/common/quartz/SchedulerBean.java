@@ -21,18 +21,24 @@ import org.quartz.SchedulerException;
 import org.quartz.impl.StdSchedulerFactory;
 
 import io.github.qiangyt.common.bean.WrapperBean;
+import io.github.qiangyt.common.bean.BeanContainer;
 import io.github.qiangyt.common.err.BadStateException;
 import jakarta.annotation.Nonnull;
 
 public class SchedulerBean extends WrapperBean<Scheduler> {
 
-    public SchedulerBean(@Nonnull Scheduler instance) {
-        super("scheduler", instance);
+    public SchedulerBean(@Nonnull BeanContainer container, @Nonnull Scheduler instance) {
+        super("scheduler", container, instance);
     }
 
     @Override
-    public void init() throws Exception {
+    public void doInit() throws Exception {
         getInstance().start();
+    }
+
+    @Override
+    public void doDestroy() throws Exception {
+        getInstance().shutdown(/* true *//* TODO */);
     }
 
     public static Scheduler newInstance() {
@@ -43,9 +49,9 @@ public class SchedulerBean extends WrapperBean<Scheduler> {
         }
     }
 
-    public static SchedulerBean newBean() {
+    public static SchedulerBean newBean(@Nonnull BeanContainer container) {
         var inst = newInstance();
-        return new SchedulerBean(inst);
+        return new SchedulerBean(container, inst);
     }
 
 }
