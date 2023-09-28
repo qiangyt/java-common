@@ -43,6 +43,9 @@ import io.github.qiangyt.common.misc.StringHelper;
 public class JsonAPI implements Dumpable {
 
     @Nonnull
+    final Jackson jackson;
+
+    @Nonnull
     final JsonAPIConfig config;
 
     final String path;
@@ -59,18 +62,36 @@ public class JsonAPI implements Dumpable {
     JsonAPIErrorHandler errorHandler;
 
     public JsonAPI(@Nonnull JsonAPIConfig config) {
-        this(config, "");
+        this(Jackson.JSON_CLIENT, config);
+    }
+
+    public JsonAPI(@Nonnull Jackson jackson, @Nonnull JsonAPIConfig config) {
+        this(jackson, config, "");
     }
 
     public JsonAPI(@Nonnull JsonAPIConfig config, @Nonnull JsonAPIErrorHandler errorHandler) {
-        this(config, "", errorHandler);
+        this(Jackson.JSON_CLIENT, config, errorHandler);
+    }
+
+    public JsonAPI(@Nonnull Jackson jackson, @Nonnull JsonAPIConfig config, @Nonnull JsonAPIErrorHandler errorHandler) {
+        this(jackson, config, "", errorHandler);
     }
 
     public JsonAPI(@Nonnull JsonAPIConfig config, String path) {
-        this(config, path, JsonAPIErrorHandler.DEFAULT);
+        this(Jackson.JSON_CLIENT, config, path);
+    }
+
+    public JsonAPI(@Nonnull Jackson jackson, @Nonnull JsonAPIConfig config, String path) {
+        this(jackson, config, path, JsonAPIErrorHandler.DEFAULT);
     }
 
     public JsonAPI(@Nonnull JsonAPIConfig config, String path, @Nonnull JsonAPIErrorHandler errorHandler) {
+        this(Jackson.JSON_CLIENT, config, path, errorHandler);
+    }
+
+    public JsonAPI(@Nonnull Jackson jackson, @Nonnull JsonAPIConfig config, String path,
+            @Nonnull JsonAPIErrorHandler errorHandler) {
+        this.jackson = jackson;
         this.config = requireNonNull(config);
         this.path = requireNonNull(path);
         this.errorHandler = errorHandler;

@@ -52,10 +52,17 @@ public class Jackson {
     public static final Jackson DEFAULT = new Jackson(buildDefaultMapper(false, false));
 
     @Nonnull
+    public static final Jackson JSON_CLIENT = new Jackson(buildDefaultMapper(false, false));
+    static {
+        JSON_CLIENT.mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    }
+
+    @Nonnull
     public static final Jackson ENV_DEFAULT = new Jackson(buildDefaultMapper(true, false));
 
     @Nonnull
     public static final Jackson DUMP = new Jackson(buildDefaultMapper(false, false));
+
     @Nonnull
     public static final Jackson ENV_DUMP = new Jackson(buildDefaultMapper(true, false));
 
